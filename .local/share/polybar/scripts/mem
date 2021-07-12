@@ -1,0 +1,3 @@
+#!/bin/sh
+notify-send " ---------Memory intensive---------
+$(ps axch -o cmd:30,%mem --sort=-%mem | head | awk '{$0=$0"%"}1')" 

@@ -16,30 +16,18 @@
 ;
 ;==========================================================
 
-;==========================================================
-; COLORS
-;==========================================================
-[colors]
-background = #c2282a36
-background-alt = #c244475a
-bg-opaque = #282a36
-bg-alt-opaque = #44475a
-foreground = #f8f8f2
-dark-blue = #6272a4
-purple = #bd93f9
-cyan = #8be9fd
-yellow = #f1fa8c
-alert = #ff5555
+include-file = /home/nathos/.config/polybar/modules.ini
+include-file = /home/nathos/.config/polybar/colors.ini
+include-file = /home/nathos/.config/polybar/fonts.ini
 
 ;==========================================================
 ; SETTINGS
 ;==========================================================
 [settings]
 screenchange-reload = true
-format-padding = 2
-format-background = ${colors.background-alt}
+format-padding = 0
+format-background = ${colors.bg-alt-opaque}
 format-foreground = ${colors.foreground}
-format-underline = ${colors.purple}
 
 ;==========================================================
 ; GLOBAL
@@ -52,184 +40,38 @@ margin-bottom = 5
 ; BARS
 ;==========================================================
 [bar/main]
+inherit = fonts
 monitor = ${env:MONITOR:}
 width = 100%
-height = 27
+height = 26
 bottom = true
+fixed-center = true
 
-background = ${colors.background}
+background = ${colors.transparent}
 foreground = ${colors.foreground}
 
-line-size = 3
-line-color = #f00
+overline-size = 0
+overline-color = ${colors.cyan}
 
-padding-left = 0
-padding-right = 0
+padding = 0
+spacing = 0
 
-module-margin-left = 1
-module-margin-right = 1
+module-margin-left = 0
+module-margin-right = 0
 
-font-0 = Noto:pixelsize=10;1
-font-1 = Font Awesome 5 Free:pixelsize=10;1
-font-2 = Font Awesome 5 Brands:pixelsize=10;1
-font-3 = unifont:fontformat=truetype:size=8:antialias=false;0
+modules-left = logo cr-p-bg i3 cr-bg-a xwindow cr-a-db playerctl cr-db-t
+modules-center = cl-a-t date cr-a-t
+modules-right = cl-db-t cdisk cl-a-db cmemory cl-bg-a ccpu cl-p-bg temperature
 
-modules-left = i3 xwindow
-modules-center = date
-modules-right = cdisk cmemory ccpu cbattery temperature 
-
-;tray-background = #0063ff
 tray-position = none
-
-;wm-restack = bspwm
-;wm-restack = i3
-
-;override-redirect = true
-
-;scroll-up = bspwm-desknext
-;scroll-down = bspwm-deskprev
-
-;scroll-up = i3wm-wsnext
-;scroll-down = i3wm-wsprev
 
 cursor-click = pointer
 cursor-scroll = ns-resize
+tray-background = ${colors.bg-opaque}
 
 
 ;==========================================================
 [bar/primary]
 inherit = bar/main
 tray-position = right
-tray-padding = 2
-
-;==========================================================
-; MODULES
-;==========================================================
-[module/xwindow]
-type = internal/xwindow
-label = %title:0:50:...%
-format-padding = 2
-format-margin-left = 0
-format-background = ${colors.background-alt}
-format-foreground = ${colors.cyan}
-format-underline = ${colors.cyan}
-
-;==========================================================
-[module/i3]
-type = internal/i3
-format = <label-state> <label-mode>
-index-sort = true
-wrapping-scroll = false
-margin-right = 0
-margin-left = 0
-format-background = ${colors.background}
-format-foreground = ${colors.foreground}
-format-underline = ${colors.background}
-format-padding = 0
-
-; Only show workspaces on the same output as the bar
-pin-workspaces = true
-
-label-mode-padding = 2
-label-mode-foreground = ${colors.alert}
-label-mode-background = ${colors.background-alt}
-label-mode-underline = ${colors.alert}
-label-mode-margin-left = 1
-
-; focused = Active workspace on focused monitor
-label-focused = %name%
-label-focused-background = ${colors.background-alt}
-label-focused-underline = ${colors.cyan}
-label-focused-foreground = ${colors.cyan}
-label-focused-padding = 2
-
-; unfocused = Inactive workspace on any monitor
-label-unfocused = %name%
-label-unfocused-padding = 2
-
-; visible = Active workspace on unfocused monitor
-label-visible = %name%
-label-visible-background = ${colors.background-alt}
-label-visible-underline = ${colors.purple}
-label-visible-padding = 2
-
-; urgent = Workspace with urgency hint set
-label-urgent = %name%
-label-urgent-underline = ${colors.alert}
-label-urgent-foreground = ${colors.alert}
-label-urgent-padding = 2
-
-; Separator in between workspaces
-; label-separator = |
-
-;==========================================================
-[module/filesystem]
-type = internal/fs
-interval = 25
-mount-0 = /
-label-mounted =  %percentage_used%%
-label-unmounted =  Unmounted
-
-;==========================================================
-[module/cdisk]
-type = custom/script
-exec = df -h / | awk '/sda3/ {print $3 "i/" $2 "i"}' 
-interval = 5
-format-prefix = " "
-
-;==========================================================
-[module/cmemory]
-type = custom/script
-exec = free -h | awk '/Mem:/ {print $3 "/" $2}' 
-click-left = ~/.local/share/polybar/scripts/mem
-click-right = urxvt -e "htop" "-t"
-interval = 5
-format-prefix = " "
-
-;==========================================================
-[module/ccpu]
-type = custom/script
-exec = mpstat 1 1 | awk '/Average/ {print $3 "%"}'
-click-left = ~/.local/share/polybar/scripts/cpu
-click-right = urxvt -e "htop" "-t"
-interval = 5
-format-prefix = " "
-
-;==========================================================
-[module/cbattery]
-type = custom/script
-exec = ~/.local/share/polybar/scripts/bat
-
-interval = 5
-
-;==========================================================
-[module/temperature]
-type = internal/temperature
-thermal-zone = 0
-warn-temperature = 60
-
-format = <ramp> <label>
-format-warn = <ramp> <label-warn>
-format-warn-underline = ${colors.yellow}
-
-label = %temperature-c%
-label-warn = %temperature-c%
-label-warn-foreground = ${colors.yellow}
-
-ramp-0 = 
-ramp-1 = 
-ramp-2 = 
-ramp-3 = 
-ramp-4 = 
-ramp-foreground = ${colors.foreground}
-
-;==========================================================
-[module/date]
-type = internal/date
-interval = 5
-date = "%b %d"
-date-alt = "%b %d, %Y"
-time = %H:%M
-time-alt = %H:%M:%S
-format-prefix = " "
-label = %date%  %time%
+modules-right = cl-db-t cdisk cl-a-db cmemory cl-bg-a ccpu cl-p-bg temperature cl-bg-p

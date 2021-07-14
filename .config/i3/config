@@ -98,16 +98,16 @@ bindsym $mod+a focus parent
 
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.
-set $ws1 "1 "
-set $ws2 "2 "
-set $ws3 "3 "
-set $ws4 "4 "
-set $ws5 "5 "
-set $ws6 "6 "
-set $ws7 "7 "
-set $ws8 "8 "
-set $ws9 "9 "
-set $ws10 "10 "
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
 
 # switch to workspace
 bindsym $mod+1 workspace $ws1
@@ -141,7 +141,7 @@ bindsym $mod+Shift+r restart
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 
 # resize window (you can also use the mouse for that)
-mode "resize" {
+mode ""{
         # These bindings trigger as soon as you enter the resize mode
 
         # Pressing left will shrink the window’s width.
@@ -165,7 +165,7 @@ mode "resize" {
         bindsym $mod+r mode "default"
 }
 
-bindsym $mod+r mode "resize"
+bindsym $mod+r mode ""
 bindsym Mod1+d exec flameshot gui
 
 bindsym $mod+Ctrl+Left move workspace to output left
@@ -204,7 +204,7 @@ client.urgent		$bg-color	$urgent-bg	$urgent-bg	$text-color
 #	}
 #}
 
-exec xcompmgr &
+exec picom &
 exec xrdb ~/.Xresources &
 exec ~/.config/polybar/launch.sh &
 exec --no-startup-id nm-applet &
@@ -212,6 +212,6 @@ exec blueman-applet &
 exec volumeicon &
 #exec xrandr --output eDP-1 --left-of HDMI-1 --left-of DP-2 &
 #exec xrandr --output HDMI-1 --scale 1.3x1.3 &
-exec ~/.screenlayout/layout.sh &
+exec ~/.local/share/screenlayout/layout.sh &
 exec flameshot &
 exec nitrogen --restore &

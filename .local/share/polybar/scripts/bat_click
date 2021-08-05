@@ -1,0 +1,17 @@
+#!/bin/sh
+#status=$(upower -i /org/freedesktop/UPower/devices/battery_BAT0 | awk '/state:/ {print $2}')
+#percentage=$(upower -i /org/freedesktop/UPower/devices/battery_BAT0 | awk '/percentage:/ {print substr($2, 1, length($2)-1)}')
+status="discharging"
+percentage=9
+toprint=""
+
+if [ $status != 'discharging' ]; then
+    toprint=$(printf "%s %18s%s\n" "Time until full:" $(upower -i /org/freedesktop/UPower/devices/battery_BAT0 | awk '/time to full/ {print $2}') "h")
+else
+    toprint=$(printf "%s %19s%s\n" "Time remaining:" $(upower -i /org/freedesktop/UPower/devices/battery_BAT0 | awk '/time to empty/ {print $2}') "h")
+fi
+
+notify-send "######## Battery Information #######
+$(printf "%s %23s%s\n" "Percentage:" $percentage "%")
+$(printf "%s %28s%s\n" "Status:" $status)
+$toprint" -t 0

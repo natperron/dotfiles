@@ -26,7 +26,7 @@ include-file = /home/nathos/.config/polybar/fonts.ini
 [settings]
 screenchange-reload = true
 format-padding = 0
-format-background = ${colors.bg-alt-opaque}
+format-background = ${colors.dark-blue}
 format-foreground = ${colors.foreground}
 
 ;==========================================================
@@ -47,11 +47,13 @@ height = 26
 bottom = true
 fixed-center = true
 
-background = ${colors.transparent}
+background = ${colors.background}
 foreground = ${colors.foreground}
 
-overline-size = 0
-overline-color = ${colors.cyan}
+border-top-size = 3
+border-top-color = ${colors.background}
+border-bottom-size = 3
+border-bottom-color = ${colors.background}
 
 padding = 0
 spacing = 0
@@ -59,19 +61,19 @@ spacing = 0
 module-margin-left = 0
 module-margin-right = 0
 
-modules-left = logo cr-p-bg i3 cr-bg-a xwindow cr-a-db playerctl cr-db-t
-modules-center = cl-a-t date cr-a-t
-modules-right = cl-db-t cdisk cl-a-db cmemory cl-bg-a ccpu cl-p-bg temperature
+modules-left = cl-p-bt logo cr-p-bt cl-db-bt i3 cr-db-a xwindow cr-a-bt
+modules-center = cl-db-bt date cr-db-bt
+modules-right = cl-db-bt playerctl cl-p-db music cr-p-bt bat info padding-1
 
 tray-position = none
 
 cursor-click = pointer
 cursor-scroll = ns-resize
-tray-background = ${colors.bg-opaque}
+tray-background = ${colors.background}
 
 
 ;==========================================================
 [bar/primary]
 inherit = bar/main
 tray-position = right
-modules-right = cl-db-t cdisk cl-a-db cmemory cl-bg-a ccpu cl-p-bg temperature cl-bg-p
+modules-right = cl-db-bt playerctl cl-p-db music cr-p-bt bat info

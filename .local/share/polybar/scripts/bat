@@ -3,24 +3,55 @@ status=$(upower -i /org/freedesktop/UPower/devices/battery_BAT0 | awk '/state:/ 
 percentage=$(upower -i /org/freedesktop/UPower/devices/battery_BAT0 | awk '/percentage:/ {print substr($2, 1, length($2)-1)}')
 toprint=""
 
-if [ $status != 'discharging' ]
-then
-    toprint=""
-elif [ $percentage -ge 90 ]
-then
-    toprint=""
-elif [ $percentage -ge 65 ]
-then
-    toprint=""
-elif [ $percentage -ge 40 ]
-then
-    toprint=""
-elif [ $percentage -ge 6 ]
-then
-    toprint=""
+if [ $percentage -ge 98 ]; then
+    if [ $status != 'discharging' ]; then
+        toprint=""
+    else
+        toprint=""
+    fi
+elif [ $percentage -ge 90 ]; then
+    if [ $status != 'discharging' ]; then
+        toprint=""
+    else
+        toprint=""
+    fi
+elif [ $percentage -ge 75 ]; then
+    if [ $status != 'discharging' ]; then
+        toprint=""
+    else
+        toprint=""
+    fi
+elif [ $percentage -ge 60 ]; then
+    if [ $status != 'discharging' ]; then
+        toprint=""
+    else
+        toprint=""
+    fi
+elif [ $percentage -ge 40 ]; then
+    if [ $status != 'discharging' ]; then
+        toprint=""
+    else
+        toprint=""
+    fi
+elif [ $percentage -ge 25 ]; then
+    if [ $status != 'discharging' ]; then
+        toprint=""
+    else
+        toprint=""
+    fi
+elif [ $percentage -ge 10 ]; then
+    if [ $status != 'discharging' ]; then
+        toprint=""
+    else
+        toprint=""
+    fi
 else
-    toprint=""
+    if [ $status != 'discharging' ]; then
+        toprint=""
+    else
+        toprint="%{F#ff5555}%{F-}"
+    fi
 fi
 
-echo $toprint $percentage%
+echo "%{T8}$toprint%{T-} "
     

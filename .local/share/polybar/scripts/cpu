@@ -1,3 +1,0 @@
-#!/bin/sh
-notify-send " -----------CPU intensive----------
-$(ps axch -o cmd:30,%cpu --sort=-%cpu | head | awk '{$0=$0"%"}1')"

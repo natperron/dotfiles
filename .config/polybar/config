@@ -61,9 +61,9 @@ spacing = 0
 module-margin-left = 0
 module-margin-right = 0
 
-modules-left = cl-p-bt logo cr-p-bt cl-db-bt i3 cr-db-a xwindow cr-a-bt
-modules-center = cl-db-bt date cr-db-bt
-modules-right = cl-db-bt playerctl cl-p-db music cr-p-bt bat info padding-1
+modules-left = logo-left logo logo-right cl-db-bg i3 cr-db-a xwindow cr-a-bg
+modules-center = cl-db-bg date cr-db-bg
+modules-right = cl-db-bg playerctl cl-p-db music cr-p-bg bat info padding-1
 
 tray-position = none
 
@@ -76,4 +76,4 @@ tray-background = ${colors.background}
 [bar/primary]
 inherit = bar/main
 tray-position = right
-modules-right = cl-db-bt playerctl cl-p-db music cr-p-bt bat info
+modules-right = cl-db-bg playerctl cl-p-db music cr-p-bg bat info

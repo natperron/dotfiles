@@ -1,0 +1,15 @@
+#!/bin/sh
+notify-send "######## System Information ########
+
+ ----------- Disk Space -----------
+$(printf "%s %26s" "/dev/sda3" $(df -h / | awk '/sda3/ {print $3 "i/" $2 "i"}'))
+ --------- CPU temperature --------
+$(printf "%s %25s" "Temperature" $(sensors | awk '/Core 0/ {print $3}'))
+ -------- Memory intensive --------
+$(ps axch -o cmd:30,%mem --sort=-%mem | head -n 5 | awk '{$0=$0"%"}1')
+
+$(printf "%s %29s" "Total:" $(free -h | awk '/Mem:/ {print $3 "/" $2}'))
+ ---------- CPU intensive ---------
+$(ps axch -o cmd:30,%cpu --sort=-%cpu | head -n 5 | awk '{$0=$0"%"}1')
+
+$(printf "%s %29s" "Total:" $(mpstat | awk '/all/ {print $4 "%"}'))" -t 0

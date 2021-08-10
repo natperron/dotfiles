@@ -1,0 +1,38 @@
+#!/bin/bash
+desktopname="";
+xpropid=$(xprop -root 32x '\t$0' _NET_ACTIVE_WINDOW | cut -f 2);
+[ "$xpropid" = "0x0" ] && echo "" && exit 0;
+wm_class=$(xprop -id $xpropid WM_CLASS | cut -c 20- | tr -d "\"" | cut -d ',' -f2);
+
+find_in_data_dirs() {
+    for folder in "/usr/share" "/usr/local/share" "$HOME/.local/share"; do
+        if [ -d "$folder/applications" ]; then
+            possibility="";
+            cd "$folder/applications";
+            for file in $(pwd)/*; do
+                possibility=$(cat $file | grep "StartupWMClass" | grep -Ei "($(echo $wm_class))");
+                if [[ $possibility == *"StartupWMClass"* ]]; then
+                    desktopname=$(cat $file | grep "^Name=" | head -1 | cut -d '=' -f2) ;
+                    echo "$wm_class=$desktopname" >> "$HOME/.cache/personal/xwindowdesktop";
+                    desktopname=$(echo $desktopname | cut -d "=" -f2);
+                fi
+                [[ $possibility == *"StartupWMClass"* ]] && break;
+            done
+        fi
+        [[ $possibility == *"StartupWMClass"* ]] && break;
+    done
+}
+
+# Handle if cache file/folders are missing
+[ ! -d "$HOME/.cache" ] && mkdir "$HOME/.cache";
+[ ! -d "$HOME/.cache/personal/" ] && mkdir "$HOME/.cache/personal";
+[ ! -f "$HOME/.cache/personal/xwindowdesktop" ] && touch "$HOME/.cache/personal/xwindowdesktop";
+[ -f "$HOME/.config/polybar//scripts/xwindowdesktop-hardcoded" ] && cat "$HOME/.config/polybar/scripts/xwindowdesktop-hardcoded" >> "$HOME/.cache/personal/xwindowdesktop" && rm "$HOME/.config/polybar/scripts/xwindowdesktop-hardcoded";
+
+desktopname=$(cat "$HOME/.cache/personal/xwindowdesktop" | grep -Ei "($(echo $wm_class))" | head -1 | cut -d "=" -f2);
+
+if [ "$desktopname" = "" ]; then
+    find_in_data_dirs;
+fi
+
+echo $desktopname

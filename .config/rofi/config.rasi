@@ -5,10 +5,11 @@
     foreground: #f8f8f2;
     background-color: #282a36;
     active-foreground: #bd93f9;
+    active-background: #44475a;
     urgent-foreground: #ff5555;
-    selected-foreground: @active-background;
+    selected-foreground: @active-foreground;
     selected-urgent-foreground: @urgent-background;
-    selected-active-foreground: @active-background;
+    selected-active-foreground: @active-foreground;
     separatorcolor: #6272a4;
     bordercolor: @separatorcolor;
 }
@@ -53,11 +54,11 @@
     text-color:       @urgent-foreground;
 }
 #element.normal.active {
-    background-color: @background;
+    background-color: @active-background;
     text-color:       @active-foreground;
 }
 #element.selected.normal {
-    background-color: @background;
+    background-color: @active-background;
     text-color:       @active-foreground;
 }
 #element.selected.urgent {
@@ -65,7 +66,7 @@
     text-color:       @selected-urgent-foreground;
 }
 #element.selected.active {
-    background-color: @background;
+    background-color: @active-background;
     text-color:       @selected-active-foreground;
 }
 #element.alternate.normal {
@@ -77,7 +78,7 @@
     text-color:       @foreground;
 }
 #element.alternate.active {
-    background-color: @background;
+    background-color: @active-background;
     text-color:       @active-foreground;
 }
 #scrollbar {
@@ -91,7 +92,7 @@
     border-color: @separatorcolor;
 }
 #button.selected {
-    background-color: @background;
+    background-color: @active-background;
     text-color:       @selected-foreground;
 }
 #inputbar {

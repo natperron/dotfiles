@@ -35,7 +35,7 @@ icons[suspend]="\uf9b1"
 icons[hibernate]="\uf7c9"
 icons[reboot]="\uf2ea" #fc07
 icons[shutdown]="\uf011"
-icons[cancel]="\u00d7"
+icons[cancel]="\uf057"
 
 declare -A actions
 actions[lockscreen]="loginctl lock-session ${XDG_SESSION_ID-}"

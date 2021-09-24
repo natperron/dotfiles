@@ -1,0 +1,3 @@
+#!/bin/bash
+alias wget='wget --hsts-file="$XDG_CACHE_HOME/wget-hsts"'
+alias bogofilter='bogofilter --bogofilter-dir="$XDG_DATA_HOME/bogofilter"'

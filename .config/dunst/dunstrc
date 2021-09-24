@@ -85,3 +85,7 @@
     foreground = "#ff5555"
     timeout = 0
     #icon = /path/to/icon
+
+[Spotify]
+    appname=Spotify
+    timeout = 5

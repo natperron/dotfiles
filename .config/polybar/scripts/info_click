@@ -2,9 +2,9 @@
 notify-send "######## System Information ########
 
  ----------- Disk Space -----------
-$(printf "%s %26s" "/dev/sdb2" $(df -h / | awk '/sdb2/ {print $3 "i/" $2 "i"}'))
+$(printf "%s %21s" "/dev/nvme0n1p5" $(df -h / | awk '/nvme0n1p5/ {print $3 "i/" $2 "i"}'))
  --------- CPU temperature --------
-$(printf "%s %25s" "Temperature" $(sensors | awk '/Tdie/ {print $3}'))
+$(printf "%s %25s" "Temperature" $(sensors | awk '/CPU/ {print $2}'))
  -------- Memory intensive --------
 $(ps axch -o cmd:30,%mem --sort=-%mem | head -n 5 | awk '{$0=$0"%"}1')
 

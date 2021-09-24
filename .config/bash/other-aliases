@@ -1,0 +1,8 @@
+#!/bin/bash
+alias j='j "$@" > $HOME/.cache/jlastoutput'
+alias jn='autojump'
+
+alias la="exa -aalgh --group-directories-first"
+alias ra='ranger --choosedir=$XDG_CACHE_HOME/rangerdir; LASTDIR=`cat $XDG_CACHE_HOME/rangerdir`; cd "$LASTDIR"'
+alias htop_cpu="htop -s PERCENT_CPU -t"
+alias htop_mem="htop -s PERCENT_MEM -t"

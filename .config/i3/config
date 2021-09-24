@@ -8,6 +8,7 @@ font pango:noto 10
 floating_modifier $mod
 
 bindsym $mod+Return exec urxvt
+bindsym $mod+q kill
 bindsym $mod+Shift+q kill
 bindsym $mod+d exec rofi -modi drun -show drun -show-icons
 bindsym Mod1+d exec flameshot gui
@@ -85,9 +86,21 @@ mode ""{
         bindsym Escape mode "default"
         bindsym $mod+r mode "default"
 }
+assign [class="Firefox Developer Edition"] $ws2
+assign [class="discord"] $ws3
+assign [class="Evolution"] $ws5
+assign [class="Spotify"] $ws8
+for_window [class="Firefox Developer Edition"] move to workspace $ws2 focus
+for_window [class="discord"] move to workspace $ws3 focus
+for_window [class="Evolution"] move to workspace $ws5 focus
+for_window [class="Spotify"] move to workspace $ws8 focus
 
 default_border pixel 1
 default_floating_border pixel 1
+
+for_window [urgent="latest"] focus
+focus_on_window_activation focus
+
 
 set $bg-color 		#282a36c2
 set $inactive-text	#f8f8f2
@@ -103,7 +116,7 @@ client.focused_inactive	$bg-color	$bg-color	$inactive-text	$text-color
 client.urgent		$bg-color	$urgent-bg	$urgent-bg	$text-color	
 
 exec picom &
-exec xrdb ~/.Xresources &
+exec xrdb ~/.config/X11/xresources &
 exec ~/.config/polybar/launch.sh &
 exec --no-startup-id nm-applet &
 exec blueman-applet &

@@ -32,7 +32,7 @@ export XDG_CACHE_HOME="$HOME/.cache"
 
 export VIMINIT='let $MYVIMRC="$XDG_CONFIG_HOME/vim/vimrc" | source $MYVIMRC'
 export SELECTED_EDITOR="/usr/bin/vim.basic"
-export GTK2_RC_FILES="$XDG_DATA_HOME/gtk-2.0/gtkrc"
+export GTK2_RC_FILES="$XDG_CONFIG_HOME/gtk-2.0/gtkrc"
 export SSB_HOME="$XDG_DATA_HOME/zoom"
 export WGETRC="$XDG_CONFIG_HOME/wgetrc"
 export _JAVA_OPTIONS=-Djava.util.prefs.userRoot="$XDG_CONFIG_HOME/java"

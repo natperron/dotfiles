@@ -123,6 +123,6 @@ exec blueman-applet &
 exec volumeicon &
 #exec xrandr --output eDP-1 --left-of HDMI-1 --left-of DP-2 &
 #exec xrandr --output HDMI-1 --scale 1.3x1.3 &
-exec ~/.local/share/screenlayout/layout.sh &
+exec ~/.config/X11/screenlayout.sh &
 exec flameshot &
 exec nitrogen --restore &

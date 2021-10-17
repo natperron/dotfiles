@@ -1,7 +1,7 @@
 [global]
     monitor = 0
     follow = mouse
-    geometry = "500x4-35-56"
+    geometry = "500x4-29+60"
     indicate_hidden = yes
     shrink = yes
     transparency = 10

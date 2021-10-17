@@ -1,0 +1,20 @@
+#!/bin/bash
+exit-spotify() {
+  polybar-msg hook spotify-song 1
+  polybar-msg hook spotify-right 1
+  polybar-msg hook spotify-left 1
+  polybar-msg hook spotify-open 1
+  polybar-msg hook spotify-previous 1
+  polybar-msg hook spotify-play-pause 1
+  polybar-msg hook spotify-next 1
+}
+dbus-monitor --profile "sender=org.mpris.MediaPlayer2.spotify,member=RemoveMatch" | 
+while read -r line; do
+    polybar-msg hook spotify-song 1
+    polybar-msg hook spotify-controls 1
+done &
+dbus-monitor --profile "sender=org.mpris.MediaPlayer2.spotify,member=PropertiesChanged" |
+while read -r line; do
+    polybar-msg hook spotify-song 2
+    polybar-msg hook spotify-controls 2
+done

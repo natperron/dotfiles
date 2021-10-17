@@ -1,38 +1,46 @@
 #!/bin/bash
 desktopname="";
 xpropid=$(xprop -root 32x '\t$0' _NET_ACTIVE_WINDOW | cut -f 2);
-[ "$xpropid" = "0x0" ] && echo "" && exit 0;
-wm_class=$(xprop -id $xpropid WM_CLASS | cut -c 20- | tr -d "\"" | cut -d ',' -f2);
-
-find_in_data_dirs() {
-    for folder in "/usr/share" "/usr/local/share" "$HOME/.local/share"; do
-        if [ -d "$folder/applications" ]; then
-            possibility="";
-            cd "$folder/applications";
-            for file in $(pwd)/*; do
-                possibility=$(cat $file | grep "StartupWMClass" | grep -Ei "($(echo $wm_class))");
-                if [[ $possibility == *"StartupWMClass"* ]]; then
-                    desktopname=$(cat $file | grep "^Name=" | head -1 | cut -d '=' -f2) ;
-                    echo "$wm_class=$desktopname" >> "$HOME/.cache/personal/xwindowdesktop";
-                    desktopname=$(echo $desktopname | cut -d "=" -f2);
-                fi
-                [[ $possibility == *"StartupWMClass"* ]] && break;
-            done
+[[ "$xpropid" = "0x0" ]] && polybar-msg hook xwindowdesktop 1 && exit 0;
+wm_class=$(xprop -id $xpropid WM_CLASS | cut -c 20- | tr -d "\"" | cut -d ',' -f2 | sed -e 's/^[[:space:]]*//');
+find_with_lsdesktopf() {
+    found_name="" ;
+    lsdesktopf "$wm_class" | grep -v "^#" | cut -d '#' -f3 | sed -e 's/^[[:space:]]*//' |
+    while read -r file; do
+        no_display=$(cat $file | grep "^NoDisplay=true");
+        if test -z "$no_display"; then
+            found_name=$(cat $file | grep "^Name=" | head -1 | cut -d "=" -f2) ;
+            echo "$wm_class=$found_name" >> "$HOME/.cache/xwindowdesktop" ;
+            break ;
         fi
-        [[ $possibility == *"StartupWMClass"* ]] && break;
     done
+}
+
+find_in_data_home() {
+    cd "$HOME/.local/share/applications";
+    for file in *.desktop; do
+        found_app="" ;
+        possibility=$(cat "$file" | grep "$wm_class") ;
+        [ ! -z "$possibility" ] && found_app=$(cat "$file" | grep "^Name=" | cut -d "=" -f2) ;
+        [ ! -z "$found_app" ] && echo "$wm_class=$found_app" >> "$HOME/.cache/xwindowdesktop" && break ;
+    done
+}
+
+finish() {
+    echo $desktopname ;
+    exit 0;
 }
 
 # Handle if cache file/folders are missing
 [ ! -d "$HOME/.cache" ] && mkdir "$HOME/.cache";
-[ ! -d "$HOME/.cache/personal/" ] && mkdir "$HOME/.cache/personal";
-[ ! -f "$HOME/.cache/personal/xwindowdesktop" ] && touch "$HOME/.cache/personal/xwindowdesktop";
-[ -f "$HOME/.config/polybar//scripts/xwindowdesktop-hardcoded" ] && cat "$HOME/.config/polybar/scripts/xwindowdesktop-hardcoded" >> "$HOME/.cache/personal/xwindowdesktop" && rm "$HOME/.config/polybar/scripts/xwindowdesktop-hardcoded";
-
-desktopname=$(cat "$HOME/.cache/personal/xwindowdesktop" | grep -Ei "($(echo $wm_class))" | head -1 | cut -d "=" -f2);
-
-if [ "$desktopname" = "" ]; then
-    find_in_data_dirs;
-fi
-
-echo $desktopname
+[ ! -f "$HOME/.cache/xwindowdesktop" ] && touch "$HOME/.cache/xwindowdesktop";
+desktopname=$(cat "$HOME/.cache/xwindowdesktop" | grep "$wm_class" | head -1 | cut -d "=" -f2);
+[ ! -z "$desktopname" ] && finish || find_with_lsdesktopf ;
+desktopname=$(cat "$HOME/.cache/xwindowdesktop" | grep "$wm_class" | head -1 | cut -d "=" -f2);
+[ ! -z "$desktopname" ] && finish || find_in_data_home ;
+desktopname=$(cat "$HOME/.cache/xwindowdesktop" | grep "$wm_class" | head -1 | cut -d "=" -f2);
+[ ! -z "$desktopname" ] && finish || find_in_data_home ;
+desktopname=$(cat "$HOME/.cache/xwindowdesktop" | grep "$wm_class" | head -1 | cut -d "=" -f2);
+[ ! -z "$desktopname" ] && finish || echo "$wm_class=$wm_class" >> "$HOME/.cache/xwindowdesktop";
+desktopname=$(cat "$HOME/.cache/xwindowdesktop" | grep "$wm_class" | head -1 | cut -d "=" -f2);
+finish;

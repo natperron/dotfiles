@@ -1,5 +1,5 @@
 #!/bin/bash
-alias j='j "$@" > $HOME/.cache/jlastoutput'
+alias j='j "$@" > /dev/null'
 alias jn='autojump'
 
 alias la="exa -aalgh --group-directories-first"

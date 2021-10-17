@@ -45,7 +45,7 @@ inherit = fonts
 monitor = ${env:MONITOR:}
 width = 100%
 height = 26
-bottom = true
+bottom = false
 fixed-center = true
 
 background = ${colors.background}
@@ -62,7 +62,7 @@ spacing = 0
 module-margin-left = 0
 module-margin-right = 0
 
-modules-left = logo-left logo logo-right cl-db-bg i3 cr-db-a xwindow cr-a-bg
+modules-left = logo-left logo logo-right cl-db-bg i3 cr-db-a xwindowdesktop cr-a-bg
 modules-center = cl-db-bg date cr-db-bg
 ;modules-right = cl-db-bg playerctl cl-p-db music cr-p-bg bat info padding-1
 modules-right = cl-db-bg playerctl music bat info padding-1
@@ -78,6 +78,6 @@ tray-background = ${colors.background}
 [bar/primary]
 inherit = bar/main
 tray-position = right
-;modules-right = cl-db-bg playerctl cl-p-db music cr-p-bg bat info
-modules-right = cl-db-bg playerctl music bat info
-;modules-right = playerctl spotify-prev spotify-play-pause spotify-next bat info
+;modules-right = cl-db-bg spotify-song spotify-controls bat info
+modules-right = cl-db-bg spotify-song spotify-controls bat info
+

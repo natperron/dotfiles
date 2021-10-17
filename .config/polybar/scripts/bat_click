@@ -21,4 +21,4 @@ notify-send "######## Battery Information #######
 
 $(printf "%s %23s%s\n" "Percentage:" $percentage "%")
 $(printf "%s %28s%s\n" "Status:" $status)
-$toprint" -t 0
+$toprint" -t 5000

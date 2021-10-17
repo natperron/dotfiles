@@ -5,11 +5,11 @@ notify-send "######## System Information ########
 $(printf "%s %21s" "/dev/nvme0n1p5" $(df -h / | awk '/nvme0n1p5/ {print $3 "i/" $2 "i"}'))
  --------- CPU temperature --------
 $(printf "%s %25s" "Temperature" $(sensors | awk '/CPU/ {print $2}'))
- -------- Memory intensive --------
-$(ps axch -o cmd:30,%mem --sort=-%mem | head -n 5 | awk '{$0=$0"%"}1')
-
-$(printf "%s %29s" "Total:" $(free -h | awk '/Mem:/ {print $3 "/" $2}'))
  ---------- CPU intensive ---------
 $(ps axch -o cmd:30,%cpu --sort=-%cpu | head -n 5 | awk '{$0=$0"%"}1')
 
-$(printf "%s %29s" "Total:" $(mpstat | awk '/all/ {print $4 "%"}'))" -t 0
+$(printf "%s %29s" "Total:" $(mpstat | awk '/all/ {print $4 "%"}'))
+ -------- Memory intensive --------
+$(ps axch -o cmd:30,%mem --sort=-%mem | head -n 5 | awk '{$0=$0"%"}1')
+
+$(printf "%s %29s" "Total:" $(free -h | awk '/Mem:/ {print $3 "/" $2}'))" -t 10000

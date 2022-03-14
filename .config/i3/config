@@ -23,6 +23,9 @@ bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 
+bindsym $mod+Ctrl+Left move workspace to output left
+bindsym $mod+Ctrl+Right move workspace to output right
+
 bindsym $mod+h split h
 bindsym $mod+v split v
 bindsym $mod+f fullscreen toggle
@@ -67,12 +70,10 @@ bindsym $mod+Shift+8 move container to workspace $ws8
 bindsym $mod+Shift+9 move container to workspace $ws9
 bindsym $mod+Shift+0 move container to workspace $ws10
 
-bindsym $mod+Ctrl+Left move workspace to output left
-bindsym $mod+Ctrl+Right move workspace to output right
-
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
 bindsym $mod+Shift+e i3-msg exit
+bindsym $mod+l exec i3lock-fancy
 
 bindsym $mod+r mode ""
 
@@ -86,11 +87,11 @@ mode ""{
         bindsym Escape mode "default"
         bindsym $mod+r mode "default"
 }
-assign [class="Firefox Developer Edition"] $ws2
+assign [class="Google-chrome"] $ws2
 assign [class="discord"] $ws3
 assign [class="Evolution"] $ws5
 assign [class="Spotify"] $ws8
-for_window [class="Firefox Developer Edition"] move to workspace $ws2 focus
+for_window [class="Google-chrome"] move to workspace $ws2 focus
 for_window [class="discord"] move to workspace $ws3 focus
 for_window [class="Evolution"] move to workspace $ws5 focus
 for_window [class="Spotify"] move to workspace $ws8 focus
@@ -98,9 +99,10 @@ for_window [class="Spotify"] move to workspace $ws8 focus
 default_border pixel 1
 default_floating_border pixel 1
 
-for_window [urgent="latest"] focus
+for_window [urgent="latest" class="Google-chrome"] focus
 focus_on_window_activation focus
 
+for_window [class="Florence"] floating enable
 
 set $bg-color 		#282a36c2
 set $inactive-text	#f8f8f2
@@ -118,6 +120,9 @@ client.urgent		$bg-color	$urgent-bg	$urgent-bg	$text-color
 exec picom &
 exec xrdb ~/.config/X11/xresources &
 exec ~/.config/polybar/launch.sh &
+exec ~/.config/polybar/scripts/spotify-listener.sh &
+exec ~/.config/polybar/scripts/xev-listener.sh &
+exec ~/.config/polybar/scripts/bat-listener.sh &
 exec --no-startup-id nm-applet &
 exec blueman-applet &
 exec volumeicon &

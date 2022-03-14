@@ -1,0 +1,2 @@
+#!/bin/bash
+playerctl -p spotify metadata -f "{{artist}} - {{title}}" | sed -E 's/(.{40}).+/\1.../'

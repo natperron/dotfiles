@@ -1,8 +1,9 @@
 #!/bin/bash
 desktopname="";
 xpropid=$(xprop -root 32x '\t$0' _NET_ACTIVE_WINDOW | cut -f 2);
-[[ "$xpropid" = "0x0" ]] && polybar-msg hook xwindowdesktop 1 && exit 0;
+[[ "$xpropid" = "0x0" ]] && echo "" && exit 0;
 wm_class=$(xprop -id $xpropid WM_CLASS | cut -c 20- | tr -d "\"" | cut -d ',' -f2 | sed -e 's/^[[:space:]]*//');
+[[ "$wm_class" = "Wine" ]] && wm_class=$(xprop -id $xpropid WM_CLASS | cut -c 20- | tr -d "\"" | cut -d ',' -f1 | sed -e 's/^[[:space:]]*//');
 find_with_lsdesktopf() {
     found_name="" ;
     lsdesktopf "$wm_class" | grep -v "^#" | cut -d '#' -f3 | sed -e 's/^[[:space:]]*//' |
@@ -16,14 +17,19 @@ find_with_lsdesktopf() {
     done
 }
 
-find_in_data_home() {
-    cd "$HOME/.local/share/applications";
-    for file in *.desktop; do
+find_in_folder() {
+    for entry in "$1"/*; do
+	[ -d "$entry" ] && find_in_folder "$entry" && continue ;
+	([ ! -f "$entry" ] || [ -z "$(echo "$entry" | grep ".desktop")" ]) && continue ;
         found_app="" ;
-        possibility=$(cat "$file" | grep "$wm_class") ;
-        [ ! -z "$possibility" ] && found_app=$(cat "$file" | grep "^Name=" | cut -d "=" -f2) ;
+        possibility=$(cat "$entry" | grep "$wm_class") ;
+        [ ! -z "$possibility" ] && found_app=$(cat "$entry" | grep "^Name=" | cut -d "=" -f2) ;
         [ ! -z "$found_app" ] && echo "$wm_class=$found_app" >> "$HOME/.cache/xwindowdesktop" && break ;
     done
+}
+
+find_in_data_home() {
+    find_in_folder "$HOME/.local/share/applications";
 }
 
 finish() {
@@ -39,8 +45,8 @@ desktopname=$(cat "$HOME/.cache/xwindowdesktop" | grep "$wm_class" | head -1 | c
 desktopname=$(cat "$HOME/.cache/xwindowdesktop" | grep "$wm_class" | head -1 | cut -d "=" -f2);
 [ ! -z "$desktopname" ] && finish || find_in_data_home ;
 desktopname=$(cat "$HOME/.cache/xwindowdesktop" | grep "$wm_class" | head -1 | cut -d "=" -f2);
-[ ! -z "$desktopname" ] && finish || find_in_data_home ;
+[ ! -z "$desktopname" ] && finish || find_in_data_home ;
 desktopname=$(cat "$HOME/.cache/xwindowdesktop" | grep "$wm_class" | head -1 | cut -d "=" -f2);
-[ ! -z "$desktopname" ] && finish || echo "$wm_class=$wm_class" >> "$HOME/.cache/xwindowdesktop";
+[ ! -z "$desktopname" ] && finish || echo "$wm_class=$wm_class" >> "$HOME/.cache/xwindowdesktop";
 desktopname=$(cat "$HOME/.cache/xwindowdesktop" | grep "$wm_class" | head -1 | cut -d "=" -f2);
 finish;

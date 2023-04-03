@@ -1,3 +1,4 @@
 #!/bin/bash
-alias wget='wget --hsts-file="$XDG_CACHE_HOME/wget-hsts"'
-alias bogofilter='bogofilter --bogofilter-dir="$XDG_DATA_HOME/bogofilter"'
+alias wget='wget --hsts-file=~/.cache/wget-hsts'
+alias bogofilter='bogofilter --bogofilter-dir="~/.local/share/bogofilter"'
+alias yarn='yarn --use-yarnrc ~/.config/yarn/config'

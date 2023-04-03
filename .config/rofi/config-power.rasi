@@ -21,7 +21,7 @@
     border-color: @bordercolor;
     padding:          5px 0px 5px 0px;
     width:	350px ;
-    height: 110 px; 
+    height: 125 px; 
 }
 #mainbox {
     border:  0;

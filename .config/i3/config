@@ -7,7 +7,7 @@ font pango:noto 10
 
 floating_modifier $mod
 
-bindsym $mod+Return exec urxvt
+bindsym $mod+Return exec konsole
 bindsym $mod+q kill
 bindsym $mod+Shift+q kill
 bindsym $mod+d exec rofi -modi drun -show drun -show-icons
@@ -87,11 +87,11 @@ mode ""{
         bindsym Escape mode "default"
         bindsym $mod+r mode "default"
 }
-assign [class="Google-chrome"] $ws2
+assign [class="firefox"] $ws2
 assign [class="discord"] $ws3
 assign [class="Evolution"] $ws5
 assign [class="Spotify"] $ws8
-for_window [class="Google-chrome"] move to workspace $ws2 focus
+for_window [class="firefox"] move to workspace $ws2 focus
 for_window [class="discord"] move to workspace $ws3 focus
 for_window [class="Evolution"] move to workspace $ws5 focus
 for_window [class="Spotify"] move to workspace $ws8 focus
@@ -99,9 +99,11 @@ for_window [class="Spotify"] move to workspace $ws8 focus
 default_border pixel 1
 default_floating_border pixel 1
 
-for_window [urgent="latest" class="Google-chrome"] focus
+for_window [urgent="latest" class="firefox"] focus
 focus_on_window_activation focus
 
+for_window [class="^.*"] border pixel 1
+for_window [class="stalonetray"] border pixel 0
 for_window [class="Florence"] floating enable
 
 set $bg-color 		#282a36c2
@@ -117,17 +119,14 @@ client.unfocused	$bg-color	$bg-color	$inactive-text	$text-color
 client.focused_inactive	$bg-color	$bg-color	$inactive-text	$text-color	
 client.urgent		$bg-color	$urgent-bg	$urgent-bg	$text-color	
 
-exec picom &
-exec xrdb ~/.config/X11/xresources &
-exec ~/.config/polybar/launch.sh &
-exec ~/.config/polybar/scripts/spotify-listener.sh &
-exec ~/.config/polybar/scripts/xev-listener.sh &
-exec ~/.config/polybar/scripts/bat-listener.sh &
-exec --no-startup-id nm-applet &
-exec blueman-applet &
-exec volumeicon &
-#exec xrandr --output eDP-1 --left-of HDMI-1 --left-of DP-2 &
-#exec xrandr --output HDMI-1 --scale 1.3x1.3 &
-exec ~/.config/X11/screenlayout.sh &
-exec flameshot &
-exec nitrogen --restore &
+exec --no-startup-id picom --experimental-backends 
+exec --no-startup-id xrdb ~/.config/X11/xresources
+exec --no-startup-id ~/.config/eww/launch.sh
+exec --no-startup-id nm-applet 
+exec --no-startup-id blueman-applet 
+exec --no-startup-id volumeicon 
+exec --no-startup-id autorandr -c
+exec --no-startup-id flameshot
+exec --no-startup-id nitrogen --restore
+exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec --no-startup-id dunst

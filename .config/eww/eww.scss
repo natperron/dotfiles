@@ -1,0 +1,105 @@
+/* Start from scratch */
+* {
+  all: unset;
+}
+
+/* Colors */
+$background: #282a36;
+$foreground: #f8f8f2;
+$blue: #6272a4;
+$purple: #bd93f9;
+$border-radius: 6px;
+$box-shadow: 0px 0px 5px rgba(0,0,0,0.5);
+$icon-font: "Overpass Nerd Font";
+
+/* Styles */
+.main-bar {
+  border-radius: 8px;
+  padding: 10px 0px 5px 0px;
+  color: $foreground;
+}
+
+.block {
+  border-radius: $border-radius;
+  box-shadow: $box-shadow;
+  background-color: $background;
+  padding: 0px 10px;
+}
+
+.launcher {
+  background-color: $blue;
+  font-family: $icon-font;
+  font-size: 16px;
+  margin-left: 10px;
+  label {
+    margin-top: 2px;
+    margin-left: -2px;
+  }
+}
+
+.workspaces {
+  color: $blue;
+  padding: 0px 5px;
+  button {
+    padding: 0px 5px;
+  }
+  .active-workspace {
+    color: $foreground;
+  }
+}
+
+.mode {
+  color: $blue;
+  label:not(.separator) {
+    color: $purple;
+    margin: 5px 5px 0px 5px;
+  }
+}
+
+.music {
+  margin-right: 10px;
+  padding: 0px;
+  .song-title {
+    margin: 0px 5px 0px 10px;
+  }
+  .separator {
+    color: $blue;
+  }
+  button {
+    padding: 0px 2.5px;
+    margin-top: 5px;
+    font-family: $icon-font;
+    // font-size: 16px;
+    color: $purple;
+  }
+  .song-prev {
+    padding-left: 5px;
+  }
+  .song-next {
+    padding-right: 5px;
+  }
+  .launch-music {
+    padding: 0px 10px 0px 5px;
+    color: $foreground;
+    &.closed {
+      padding: 0px 10px;
+    }
+  }
+}
+
+.settings {
+  font-family: $icon-font;
+  margin-left: -5px;
+  margin-right: 10px;
+  label {
+    margin-top: 5px;
+  }
+}
+
+.tray {
+  margin-right: 10px;
+  margin-left: -5px;
+  label {
+    margin-top: 5px;
+  }
+}

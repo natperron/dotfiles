@@ -21,10 +21,11 @@
 (defwidget right [monitor]
   (box 
     :space-evenly false
+    :spacing 5
     :halign "end"
     (music)
-    ; (settings)
-    (tray :monitor monitor)))
+    (battery :monitor monitor)
+    (tray)))
 
 (defwidget launcher []
   (eventbox
@@ -39,7 +40,6 @@
 (defwidget workspaces [monitor]
   (box
     :space-evenly false
-    :spacing: 5
     (for workspace in workspaces
       (eventbox
         :cursor "pointer"
@@ -116,11 +116,26 @@
         :onclick "~/.config/eww/scripts/open-spotify.sh &"
         ""))))
 
-(defwidget tray [monitor]
+(defwidget battery [monitor]
+  (eventbox
+    :onhover "eww update batterypercent=${monitor}"
+    :onhoverlost "eww update batterypercent=false"
+    (box
+      :class "block battery"
+      :space-evenly false
+      (label 
+        :class "battery-icon" 
+        :text "${battery.icon}")
+      (revealer
+        :class "battery-percent"
+        :transition "slideright"
+        :reveal {batterypercent == monitor}
+        "${battery.percent}%"))))
+
+(defwidget tray []
   (eventbox
     :cursor "pointer"
     (button
       :class "block tray"
-      :visible {monitor == "DP-2" ? true : false}
       :onclick "~/.config/eww/scripts/open-tray.sh ${tray} &"
       "")))

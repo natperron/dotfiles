@@ -14,6 +14,7 @@ get_window() {
     [[ "$xpropid" == "0x0" || "$xpropid" == "" ]] && echo "" && return
 
     wm_class=$(xprop -id "$xpropid" WM_CLASS | awk '{print $NF}' | tr -d '"')
+    [[ "$wm_class" == "found." ]] && echo $(xprop -id "$xpropid" _NET_WM_NAME | cut -d '"' -f 2) && return
     [[ "$wm_class" == "stalonetray" ]] && return
 
     # Handle if cache file/folders are missing

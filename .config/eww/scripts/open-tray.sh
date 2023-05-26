@@ -1,6 +1,5 @@
 #!/bin/bash
 show_tray() {
-    # stalonetray;
     i3-msg [class="stalonetray"] scratchpad show
     pidof tray-icon-fix || (tray-icon-fix &)
     sleep 0.2

@@ -6,3 +6,5 @@
 (defpoll datetime :interval "1s" "date +'%b %d, %H:%M'")
 (defvar batterypercent false)
 (defvar tray false)
+
+(defvar bluetoothopen false)

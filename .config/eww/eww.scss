@@ -1,111 +1,15 @@
-/* Start from scratch */
+@import "./scss/vars.scss";
+@import "./scss/bar.scss";
+
 * {
   all: unset;
 }
 
-/* Colors */
-$background: #282a36;
-$foreground: #f8f8f2;
-$blue: #6272a4;
-$purple: #bd93f9;
-$border-radius: 8px;
-$box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
-$icon-font: "Overpass Nerd Font";
-
-/* Styles */
-.main-bar {
-  padding: 10px 0px 5px 0px;
-  color: $foreground;
+.window {
+  background: $background;
+  padding: 10px;
 }
 
-.block {
-  border-radius: $border-radius;
-  box-shadow: $box-shadow;
-  background-color: $background;
-  padding: 0px 10px;
-}
-
-.launcher {
-  background-color: $blue;
-  font-family: $icon-font;
-  font-size: 16px;
-  margin-left: 10px;
-  label {
-    margin-top: 4px;
-    margin-left: -1px;
-  }
-}
-
-.workspaces {
-  color: $blue;
-  padding: 0px 5px;
-  button {
-    padding: 0px 5px;
-  }
-  .active-workspace {
-    color: $foreground;
-  }
-}
-
-.mode {
-  color: $blue;
-  label:not(.separator) {
-    color: $purple;
-    margin: 5px 5px 0px 5px;
-  }
-}
-
-.music {
-  padding: 0px;
-  .song-title {
-    margin: 0px 5px 0px 10px;
-  }
-  .separator {
-    color: $blue;
-  }
-  button {
-    padding: 0px 2.5px;
-    margin-top: 5px;
-    font-family: $icon-font;
-    color: $purple;
-  }
-  .song-prev {
-    padding-left: 5px;
-  }
-  .song-next {
-    padding-right: 5px;
-  }
-  .launch-music {
-    padding: 0px 10px 0px 5px;
-    color: $foreground;
-    &.closed {
-      padding: 0px 10px;
-    }
-  }
-}
-
-.settings {
-  font-family: $icon-font;
-  label {
-    margin-top: 5px;
-  }
-}
-
-.battery {
-  margin-right: 5px;
-  .battery-icon {
-    margin-top: 5px;
-    font-family: $icon-font;
-  }
-  .battery-percent {
-    padding-left: 5px;
-  }
-}
-
-.tray {
-  margin-right: 10px;
-  margin-left: -5px;
-  label {
-    margin-top: 5px;
-  }
+.title {
+  font-size: $title-font-size;
 }

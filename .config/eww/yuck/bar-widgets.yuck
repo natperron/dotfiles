@@ -24,6 +24,7 @@
     :spacing 5
     :halign "end"
     (music)
+    ; (settings)
     (battery :monitor monitor)
     (tray)))
 
@@ -116,26 +117,36 @@
         :onclick "~/.config/eww/scripts/open-spotify.sh &"
         ""))))
 
+(defwidget settings []
+  (box
+    :class "block"
+    (button
+      :onclick "~/.config/eww/scripts/open-bluetooth.sh ${bluetoothopen} &"
+      "BL")))
+
 (defwidget battery [monitor]
-  (eventbox
-    :onhover "eww update batterypercent=${monitor}"
-    :onhoverlost "eww update batterypercent=false"
-    (box
-      :class "block battery"
-      :space-evenly false
-      (label 
-        :class "battery-icon" 
-        :text "${battery.icon}")
-      (revealer
-        :class "battery-percent"
-        :transition "slideright"
-        :reveal {batterypercent == monitor}
-        "${battery.percent}%"))))
+  (box
+    :class "block battery"
+    (eventbox
+      :onhover "eww update batterypercent=${monitor}"
+      :onhoverlost "eww update batterypercent=false"
+      (box
+        :class "battery-inner"
+        :space-evenly false
+        (label 
+          :class "battery-icon" 
+          :text "${battery.icon}")
+        (revealer
+          :class "battery-percent"
+          :transition "slideright"
+          :reveal {batterypercent == monitor}
+          "${battery.percent}%")))))
 
 (defwidget tray []
-  (eventbox
-    :cursor "pointer"
-    (button
-      :class "block tray"
-      :onclick "~/.config/eww/scripts/open-tray.sh ${tray} &"
-      "")))
+  (box
+    :class "block tray"
+    (eventbox
+      :cursor "pointer"
+      (button
+        :onclick "~/.config/eww/scripts/open-tray.sh ${tray} &"
+        ""))))

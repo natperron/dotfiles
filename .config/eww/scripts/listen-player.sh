@@ -15,9 +15,8 @@ get_player() {
 get_player;
 dbus-monitor \
     --profile "sender=org.mpris.MediaPlayer2.Feishin,member=PropertiesChanged" \
-    --profile "member=RemoveMatch" \
-    --profile "sender=org.mpris.MediaPlayer2.spotify,member=PropertiesChanged" |
-    #--profile "sender=org.mpris.MediaPlayer2.spotify,member=RemoveMatch" |
+    --profile "sender=org.mpris.MediaPlayer2.spotify,member=PropertiesChanged" \
+    --profile "member=RemoveMatch" |
 while read -r line; do
     get_player;
 done;

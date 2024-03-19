@@ -1,7 +1,7 @@
 #!/bin/bash
 
 find_in_folder() {
-    desktopfile=$(find "$1" -type f -iname "$wm_class.desktop" | head -1)
+    desktopfile=$(find "$1" -type f,l -iname "$wm_class.desktop" | head -1)
     [[ -z "$desktopfile" ]] && desktopfile=$(find "$1" -type f -name "*.desktop" \
         | xargs grep -L '^NoDisplay=true' \
         | xargs grep -l -i -E "^(Exec|Categories|StartupWMClass).*$wm_class" \

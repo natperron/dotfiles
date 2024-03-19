@@ -91,20 +91,20 @@
       (button
         :class "song-prev"
         :visible {player.player ? true : false}
-        :onclick "playerctl -p spotify previous"
+        :onclick "playerctl -p spotify,Feishin previous"
         "玲"))
     (eventbox
       :cursor "pointer"
       (button
         :visible {player.player ? true : false}
-        :onclick "playerctl -p spotify play-pause" 
+        :onclick "playerctl -p spotify,Feishin play-pause" 
         (label :text {player.playing ? "" : "契"})))
     (eventbox
       :cursor "pointer"
       (button
         :class "song-next"
         :visible {player.player ? true : false}
-        :onclick "playerctl -p spotify next"
+        :onclick "playerctl -p spotify,Feishin next"
         "怜"))
     (label 
       :class "separator" 

@@ -7,6 +7,12 @@ font pango:noto 10
 
 floating_modifier $mod
 
+bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +5%
+bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
+bindsym XF86AudioPlay exec playerctl play-pause
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioPrev exec playerctl previous
+
 bindsym $mod+Return exec konsole
 bindsym $mod+q kill
 bindsym $mod+Shift+q kill
@@ -87,12 +93,16 @@ mode ""{
         bindsym Escape mode "default"
         bindsym $mod+r mode "default"
 }
+assign [class="Code"] $ws1
 assign [class="firefox"] $ws2
 assign [class="discord"] $ws3
+assign [class="Slack"] $ws4
 assign [class="Evolution"] $ws5
 assign [class="Spotify"] $ws8
+for_window [class="Code"] move to workspace $ws1 focus
 for_window [class="firefox"] move to workspace $ws2 focus
 for_window [class="discord"] move to workspace $ws3 focus
+for_window [class="Slack"] move to workspace $ws4 focus
 for_window [class="Evolution"] move to workspace $ws5 focus
 for_window [class="Spotify"] move to workspace $ws8 focus
 

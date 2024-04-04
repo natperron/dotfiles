@@ -99,12 +99,14 @@ assign [class="discord"] $ws3
 assign [class="Slack"] $ws4
 assign [class="Evolution"] $ws5
 assign [class="Spotify"] $ws8
+assign [class="feishin"] $ws8
 for_window [class="Code"] move to workspace $ws1 focus
 for_window [class="firefox"] move to workspace $ws2 focus
 for_window [class="discord"] move to workspace $ws3 focus
 for_window [class="Slack"] move to workspace $ws4 focus
 for_window [class="Evolution"] move to workspace $ws5 focus
 for_window [class="Spotify"] move to workspace $ws8 focus
+for_window [class="feishin"] move to workspace $ws8 focus
 
 default_border pixel 1
 default_floating_border pixel 1

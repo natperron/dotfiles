@@ -14,9 +14,8 @@ get_player() {
 
 get_player;
 dbus-monitor \
-    --profile "sender=org.mpris.MediaPlayer2.Feishin,member=PropertiesChanged" \
-    --profile "sender=org.mpris.MediaPlayer2.spotify,member=PropertiesChanged" \
-    --profile "member=RemoveMatch" |
+    "arg0=org.mpris.MediaPlayer2.Feishin" \
+    "type=signal,path=/org/mpris/MediaPlayer2,member=PropertiesChanged" |
 while read -r line; do
-    get_player;
+    echo $line | grep -e '^signal'>/dev/null && get_player;
 done;

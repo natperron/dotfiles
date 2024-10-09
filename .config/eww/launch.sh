@@ -1,12 +1,12 @@
 #!/bin/bash
-killall -9 eww;
+eww kill;
 barsfile="$HOME/.config/eww/yuck/bars.yuck";
 
 pidof stalonetray || (stalonetray &) && i3-msg [class="stalonetray"] move scratchpad;
 echo "" > "$barsfile";
 count=0;
 toeval="";
-for monitor in $(xrandr | awk '/ connected/{print $1}'); do
+for monitor in $(xrandr --listactivemonitors | awk '/^[[:space:]]*[0-9]:/ {print $NF}'); do
     cat >> "$barsfile" << EOL
 (defwindow bar$count
   :monitor "$monitor"

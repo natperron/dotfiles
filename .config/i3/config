@@ -94,14 +94,14 @@ mode ""{
         bindsym $mod+r mode "default"
 }
 assign [class="Code"] $ws1
-assign [class="firefox"] $ws2
+assign [class="Firefox-esr"] $ws2
 assign [class="discord"] $ws3
 assign [class="Slack"] $ws4
 assign [class="Evolution"] $ws5
 assign [class="Spotify"] $ws8
 assign [class="feishin"] $ws8
 for_window [class="Code"] move to workspace $ws1 focus
-for_window [class="firefox"] move to workspace $ws2 focus
+for_window [class="Firefox-esr"] move to workspace $ws2 focus
 for_window [class="discord"] move to workspace $ws3 focus
 for_window [class="Slack"] move to workspace $ws4 focus
 for_window [class="Evolution"] move to workspace $ws5 focus
@@ -120,6 +120,12 @@ for_window [class="Florence"] floating enable
 for_window [class="(.*join\?action\=join.*|.*zoom.*)"] floating enable
 for_window [class="(.*join\?action\=join.*|.*zoom.*)" title="Zoom - Licensed Account"] floating disable
 for_window [class="(.*join\?action\=join.*|.*zoom.*)" title="Zoom Meeting"] floating disable
+for_window [window_role="pop-up"] floating enable
+for_window [window_role="bubble"] floating enable
+for_window [window_role="task_dialog"] floating enable
+for_window [window_role="Preferences"] floating enable
+for_window [window_type="dialog"] floating enable
+for_window [window_type="menu"] floating enable
 
 set $bg-color 		#282a36c2
 set $inactive-text	#f8f8f2

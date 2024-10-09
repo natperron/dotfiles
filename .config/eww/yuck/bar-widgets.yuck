@@ -36,7 +36,7 @@
       :class "block launcher"
       :onclick "rofi -show drun -show-icons &"
       :onrightclick "rofi -show power-menu -modi power-menu:rofi-power-menu -config ~/.config/rofi/config-power.rasi &"
-      "")))
+      "")))
 
 (defwidget workspaces [monitor]
   (box

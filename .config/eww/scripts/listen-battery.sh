@@ -5,6 +5,14 @@ get_battery() {
     percent=$(upower -i /org/freedesktop/UPower/devices/battery_BAT0 | awk '/percentage:/ {print substr($2, 1, length($2)-1)}')
     icon=""
 
+    if [ $warning_sent ] && [ $status != 'discharging' ]; then
+        warning_sent=false
+    fi
+    if [ ! $warning_sent ] && [ $status == 'discharging' ] && [ $percent -lt 10 ]; then
+        notify-send "Low Battery!";
+        warning_sent=true
+    fi
+
     if [ $percent -ge 98 ]; then
         [ $status != 'discharging' ] && icon="" || icon=""
     elif [ $percent -ge 90 ]; then

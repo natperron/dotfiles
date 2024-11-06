@@ -1,6 +1,7 @@
 #!/bin/bash
-eww kill;
-barsfile="$HOME/.config/eww/yuck/bars.yuck";
+pidof eww && eww kill;
+pidof eww && killall -9 eww;
+barsfile="/home/tlm/.config/eww/yuck/bars.yuck";
 
 pidof stalonetray || (stalonetray &) && i3-msg [class="stalonetray"] move scratchpad;
 echo "" > "$barsfile";
@@ -20,9 +21,10 @@ for monitor in $(xrandr --listactivemonitors | awk '/^[[:space:]]*[0-9]:/ {print
   (bar :monitor "$monitor"))
 
 EOL
-    toeval="$toeval eww open bar$count &"
+    toeval="$toeval eww open bar$count &&"
     count=$((count + 1));
 done
+toeval="$toeval exit 0"
 
-eww daemon &
-eval $toeval
+eww daemon &&
+eval $toeval 

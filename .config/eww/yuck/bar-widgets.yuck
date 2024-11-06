@@ -92,20 +92,20 @@
         :class "song-prev"
         :visible {player.player ? true : false}
         :onclick "playerctl -p spotify,Feishin previous"
-        "玲"))
+        "󰒮"))
     (eventbox
       :cursor "pointer"
       (button
         :visible {player.player ? true : false}
         :onclick "playerctl -p spotify,Feishin play-pause" 
-        (label :text {player.playing ? "" : "契"})))
+        (label :text {player.playing ? "󰏤" : "󰐊"})))
     (eventbox
       :cursor "pointer"
       (button
         :class "song-next"
         :visible {player.player ? true : false}
         :onclick "playerctl -p spotify,Feishin next"
-        "怜"))
+        "󰒭"))
     (label 
       :class "separator" 
       :visible {player.player ? true : false} 
@@ -115,7 +115,7 @@
       (button
         :class {player.player ? "launch-music" : "launch-music closed"}
         :onclick "~/.config/eww/scripts/open-spotify.sh &"
-        ""))))
+        "󰎇"))))
 
 (defwidget settings []
   (box
@@ -149,4 +149,4 @@
       :cursor "pointer"
       (button
         :onclick "~/.config/eww/scripts/open-tray.sh ${tray} &"
-        ""))))
+        ""))))

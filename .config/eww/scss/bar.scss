@@ -1,6 +1,7 @@
 .main-bar {
   padding: 10px 10px 5px 10px;
   color: $foreground;
+  font-family: "Roboto";
 }
 
 .block {
@@ -15,7 +16,7 @@
   font-family: $icon-font;
   font-size: 16px;
   label {
-    margin-top: 4px;
+    margin-top: 3px;
     margin-left: -1px;
   }
 }
@@ -49,7 +50,7 @@
   }
   button {
     padding: 0px 2.5px;
-    margin-top: 5px;
+    margin-top: 3px;
     font-family: $icon-font;
     color: $other;
   }
@@ -81,7 +82,7 @@
     padding: 0px 10px;
   }
   .battery-icon {
-    margin-top: 5px;
+    margin-top: 3px;
     font-family: $icon-font;
   }
   .battery-percent {
@@ -95,6 +96,6 @@
     padding: 0px 10px;
   }
   label {
-    margin-top: 5px;
+    margin-top: 3px;
   }
 }

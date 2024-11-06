@@ -13,7 +13,7 @@ bindsym XF86AudioPlay exec playerctl play-pause
 bindsym XF86AudioNext exec playerctl next
 bindsym XF86AudioPrev exec playerctl previous
 
-bindsym $mod+Return exec konsole
+bindsym $mod+Return exec urxvt
 bindsym $mod+q kill
 bindsym $mod+Shift+q kill
 bindsym $mod+d exec rofi -modi drun -show drun -show-icons
@@ -94,24 +94,27 @@ mode ""{
         bindsym $mod+r mode "default"
 }
 assign [class="Code"] $ws1
-assign [class="Firefox-esr"] $ws2
+assign [class="firefox-esr"] $ws2
 assign [class="discord"] $ws3
 assign [class="Slack"] $ws4
 assign [class="Evolution"] $ws5
+assign [class="teams-for-linux"] $ws6
 assign [class="Spotify"] $ws8
 assign [class="feishin"] $ws8
 for_window [class="Code"] move to workspace $ws1 focus
-for_window [class="Firefox-esr"] move to workspace $ws2 focus
+for_window [class="firefox-esr"] move to workspace $ws2 focus
 for_window [class="discord"] move to workspace $ws3 focus
 for_window [class="Slack"] move to workspace $ws4 focus
 for_window [class="Evolution"] move to workspace $ws5 focus
+for_window [class="teams-for-linux"] move to workspace $ws6 focus
 for_window [class="Spotify"] move to workspace $ws8 focus
 for_window [class="feishin"] move to workspace $ws8 focus
 
 default_border pixel 1
 default_floating_border pixel 1
+#for_window [class="^.*"] title_format " %title"
 
-for_window [urgent="latest" class="firefox"] focus
+for_window [urgent="latest" class="firefox-esr"] focus
 focus_on_window_activation focus
 
 for_window [class="^.*"] border pixel 1
@@ -127,27 +130,29 @@ for_window [window_role="Preferences"] floating enable
 for_window [window_type="dialog"] floating enable
 for_window [window_type="menu"] floating enable
 
-set $bg-color 		#282a36c2
-set $inactive-text	#f8f8f2
+set $bg-color 		#282a36
+set $inactive-text	#6272a4
 set $text-color		#8be9fd	
-set $urgent-bg		#ff5555c2
+set $urgent-fg		#ff5555
 set $indicator 		#bd93f9
-set $test 		#6272a4	
+set $active-text	#f8f8f2	
 
 # 			border		background	text		indicator
-client.focused		$bg-color	$test		$text-color	$text-color
+client.focused		$inactive-text	$inactive-text	$active-text	$text-color
 client.unfocused	$bg-color	$bg-color	$inactive-text	$text-color	
 client.focused_inactive	$bg-color	$bg-color	$inactive-text	$text-color	
-client.urgent		$bg-color	$urgent-bg	$urgent-bg	$text-color	
+client.urgent		$bg-color	$bg-color	$urgent-fg	$text-color	
+client.focused_tab_title $inactive-text	$bg-color	$inactive-text	$text-color 
 
 exec --no-startup-id picom --experimental-backends 
-exec --no-startup-id xrdb ~/.config/X11/xresources
+exec --no-startup-id xrdb -merge ~/.config/X11/xresources
 exec --no-startup-id ~/.config/eww/launch.sh
 exec --no-startup-id nm-applet 
 exec --no-startup-id blueman-applet 
 exec --no-startup-id volumeicon 
 exec --no-startup-id autorandr -c
 exec --no-startup-id flameshot
-exec --no-startup-id nitrogen --restore
-exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+#exec --no-startup-id nitrogen --restore
+exec --no-startup-id ~/.config/feh/init.sh
+exec --no-startup-id /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1
 exec --no-startup-id dunst

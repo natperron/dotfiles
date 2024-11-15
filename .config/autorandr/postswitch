@@ -1,3 +1,3 @@
 #!/bin/bash
-i3-msg exec ~/.config/feh/init.sh;
-i3-msg exec ~/.config/eww/launch.sh;
+i3-msg 'exec --no-startup-id' ~/.config/feh/init.sh;
+i3-msg 'exec --no-startup-id' ~/.config/eww/launch.sh;

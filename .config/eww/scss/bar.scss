@@ -1,3 +1,7 @@
+label {
+  padding-top: 2px;
+}
+
 .main-bar {
   padding: 10px 10px 5px 10px;
   color: $foreground;
@@ -16,7 +20,6 @@
   font-family: $icon-font;
   font-size: 16px;
   label {
-    margin-top: 3px;
     margin-left: -1px;
   }
 }
@@ -34,10 +37,6 @@
 
 .mode {
   color: $secondary;
-  label:not(.separator) {
-    color: $other;
-    margin: 5px 5px 0px 5px;
-  }
 }
 
 .music {
@@ -50,7 +49,6 @@
   }
   button {
     padding: 0px 2.5px;
-    margin-top: 3px;
     font-family: $icon-font;
     color: $other;
   }
@@ -71,9 +69,6 @@
 
 .settings {
   font-family: $icon-font;
-  label {
-    margin-top: 5px;
-  }
 }
 
 .battery {
@@ -82,7 +77,6 @@
     padding: 0px 10px;
   }
   .battery-icon {
-    margin-top: 3px;
     font-family: $icon-font;
   }
   .battery-percent {
@@ -94,8 +88,5 @@
   padding: 0px;
   button {
     padding: 0px 10px;
-  }
-  label {
-    margin-top: 3px;
   }
 }

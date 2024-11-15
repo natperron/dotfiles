@@ -2,3 +2,7 @@
 .config/bash/work-aliases
 .config/autorandr/*/config
 .config/autorandr/*/setup
+.var/Postman/
+.local/share/fonts/
+.var/app/com.getpostman.Postman/
+.var/app/*

@@ -1,7 +1,7 @@
 #!/bin/bash
 pidof eww && eww kill;
 pidof eww && killall -9 eww;
-barsfile="/home/tlm/.config/eww/yuck/bars.yuck";
+barsfile="$HOME/.config/eww/yuck/bars.yuck";
 
 pidof stalonetray || (stalonetray &) && i3-msg [class="stalonetray"] move scratchpad;
 echo "" > "$barsfile";

@@ -1,9 +1,9 @@
 #!/bin/bash
 
 get_player() {
-    if playerctl -p spotify,Feishin metadata &> /dev/null ; then
-        title=$(playerctl -p spotify,Feishin metadata -f "{{artist}} - {{title}}" | sed -E 's/(.{40}).+/\1.../')
-        playing=$(playerctl -p spotify,Feishin status 2> /dev/null | grep Playing > /dev/null && echo true || echo false)
+    if playerctl metadata &> /dev/null ; then
+        title=$(playerctl metadata -f "{{artist}} - {{title}}" | sed -E 's/(.{40}).+/\1.../')
+        playing=$(playerctl status 2> /dev/null | grep Playing > /dev/null && echo true || echo false)
         out="{\"player\":true,\"title\":\"$title\",\"playing\":$playing}"
     else
         out="{\"player\":false,\"title\":\"No music playing\"}";

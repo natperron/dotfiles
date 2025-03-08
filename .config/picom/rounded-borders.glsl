@@ -37,6 +37,6 @@ vec4 window_shader()
 {
     vec2 tex_size = textureSize(tex, 0);
     vec4 c = texture2D(tex, texcoord / tex_size, 0);
-    vec4 with_corners = add_rounded_corners(c, texcoord, tex_size, corner_radius, 2);
+    vec4 with_corners = add_rounded_corners(c, texcoord, tex_size, corner_radius, 1);
     return default_post_processing(with_corners);    
 }

@@ -68,7 +68,10 @@ label {
 }
 
 .settings {
-  font-family: $icon-font;
+  padding: 0;
+  button {
+    padding: 0px 8px;
+  }
 }
 
 .battery {

@@ -24,8 +24,8 @@
     :spacing 5
     :halign "end"
     (music)
-    ; (settings)
-    (battery :monitor monitor)
+    (settings)
+    ; (battery :monitor monitor)
     (tray)))
 
 (defwidget launcher []
@@ -119,10 +119,14 @@
 
 (defwidget settings []
   (box
-    :class "block"
-    (button
-      :onclick "~/.config/eww/scripts/open-bluetooth.sh ${bluetoothopen} &"
-      "BL")))
+    :class "block settings"
+    (eventbox
+      :cursor "pointer"
+      (button
+        :onclick "~/.config/eww/scripts/open-bluetooth.sh ${bluetoothopen} &"
+        (image
+          :class "bluetooth-icon"
+          :icon "${bluetoothstatus.icon}")))))
 
 (defwidget battery [monitor]
   (box

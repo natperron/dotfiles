@@ -1,0 +1,32 @@
+.header {
+  .title {
+    font-size: $title-font-size;
+  }
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid $secondary;
+}
+
+button.button {
+  background-color: $background-alt;
+  border-radius: $border-radius;
+}
+
+.power-button.on {
+  color: $danger;
+}
+
+.disconnect-button, .connect-button {
+  label {
+    font-size: 16px;
+    margin-top: 0px;
+  }
+}
+
+.disconnect-button {
+  color: $danger;
+}
+
+.button.disabled {
+  opacity: 0.5;
+}

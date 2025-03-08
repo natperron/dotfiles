@@ -1,5 +1,6 @@
 @import "./scss/vars.scss";
 @import "./scss/bar.scss";
+@import "./scss/bluetooth.scss";
 
 * {
   all: unset;
@@ -8,8 +9,4 @@
 .window {
   background: $background;
   padding: 10px;
-}
-
-.title {
-  font-size: $title-font-size;
 }

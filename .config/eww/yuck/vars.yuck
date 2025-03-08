@@ -2,9 +2,10 @@
 (deflisten mode `~/.config/eww/scripts/listen-mode.sh`)
 (deflisten window `~/.config/eww/scripts/listen-window.sh`)
 (deflisten player `~/.config/eww/scripts/listen-player.sh`)
+(deflisten bluetoothstatus `~/.config/eww/scripts/listen-bluetooth-status.sh`)
 (deflisten battery `~/.config/eww/scripts/listen-battery.sh`)
+(deflisten bluetoothdevices `~/.config/eww/scripts/listen-bluetooth-devices.sh`)
 (defpoll datetime :interval "1s" "date +'%b %d, %H:%M'")
 (defvar batterypercent false)
 (defvar tray false)
-
 (defvar bluetoothopen false)

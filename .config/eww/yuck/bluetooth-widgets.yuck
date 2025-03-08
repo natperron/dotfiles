@@ -1,14 +1,82 @@
 (defwidget bluetooth []
   (box
     :class "window"
-    ; :orientation "vertical"
-    (bluetoothtitle)))
+    :orientation "vertical"
+    :space-evenly false
+    (bluetooth-title)
+    (bluetooth-message)
+    (bluetooth-devices)))
 
-(defwidget bluetoothtitle []
+(defwidget bluetooth-title []
   (box
-    :class "title"
+    :class "header"
     :valign "start"
+    :space-evenly false
+    :spacing 5
     (label
+      :class "title"
       :halign "start"
-      :text "Bluetooth")))
-  
+      :hexpand true
+      :text "Bluetooth")
+    (eventbox
+      :cursor "pointer"
+      :active {bluetoothstatus.scanning ? false : true}
+      (button
+        :class "button scan-button ${bluetoothstatus.scanning ? "disabled" : ""}"
+        :halign "end"
+        :tooltip "Scan"
+        :active {bluetoothstatus.scanning ? false : true}
+        :width 32
+        :height 32
+        :onclick "~/.config/eww/scripts/scan-bluetooth.sh"
+        ""))
+    (eventbox
+      :cursor "pointer"
+      (button
+        :class "button power-button ${bluetoothstatus.powered ? "on" : ""}"
+        :halign "end"
+        :width 32
+        :height 32
+        :tooltip {bluetoothstatus.powered ? "Power Off" : "Power On"}
+        :onclick "bluetoothctl power ${bluetoothstatus.powered ? "off" : "on"}"
+        ""))))
+
+(defwidget bluetooth-message []
+  (box
+    :class "message"
+    :valign "start"
+    :halign "center"
+    :visible {bluetoothstatus.powered ? false : true}
+    (label
+      :text "Bluetooth is off"
+      :halign "center")))
+
+(defwidget bluetooth-devices []
+  (scroll
+    :vscroll true
+    :vexpand true
+    :visible {bluetoothstatus.powered ? true : false}
+    (box
+      :class "devices"
+      :orientation "vertical"
+      :vexpand true
+      :space-evenly false
+      :spacing 5
+      (for device in bluetoothdevices
+        (box
+          :class "device"
+          :orientation "horizontal"
+          :valign "start"
+          (label
+            :halign "start"
+            :text "${device.name}")
+          (eventbox
+            :cursor "pointer"
+            (button
+              :class "button ${device.connected ? "disconnect-button" : "connect-button"}"
+              :halign "end"
+              :width 32
+              :height 32
+              :tooltip {device.connected ? "Disconnect" : "Connect"}
+              :onclick "bluetoothctl ${device.connected ? "disconnect" : "connect"} ${device.id}"
+              {device.connected ? "󱘖" : ""})))))))

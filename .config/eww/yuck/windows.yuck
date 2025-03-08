@@ -1,5 +1,5 @@
 (defwindow bluetooth
-  :windowtype "normal"
+  :windowtype "dialog"
   :geometry 
     (geometry
       :y "45"
@@ -8,3 +8,4 @@
       :height "300px"
       :anchor "top right")
   (bluetooth))
+  

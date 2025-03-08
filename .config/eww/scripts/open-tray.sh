@@ -12,7 +12,7 @@ hide_tray() {
     i3-msg [class="stalonetray"] move scratchpad
 }
 
-if [[ $1 == false ]]; then
+if [[ $(eww get tray) == false ]]; then
     show_tray
     while i3-msg -t subscribe '["window"]' > /dev/null; do
         sleep 0.5

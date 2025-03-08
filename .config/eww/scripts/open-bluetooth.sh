@@ -1,7 +1,7 @@
 #!/bin/bash
 show_bluetooth() {
   eww update bluetoothopen=true
-  eww open bluetooth
+  eww open bluetooth --screen $1
 }
 
 hide_bluetooth() {
@@ -9,9 +9,17 @@ hide_bluetooth() {
     eww close bluetooth
 }
 
-if [[ $1 == false ]]; then
-    show_bluetooth
-    i3-msg -t subscribe '["window"]' > /dev/null && hide_bluetooth
+if [[ $(eww get bluetoothopen) == false ]]; then
+    show_bluetooth $1
+    while i3-msg -t subscribe '["window"]' > /dev/null; do
+        sleep 0.5
+        xpropid=$(xprop -root 32x '\t$0' _NET_ACTIVE_WINDOW | cut -f 2)
+        [[ "$xpropid" == "0x0" || "$xpropid" == "" ]] && break
+        wm_class=$(xprop -id "$xpropid" WM_CLASS | awk '{print $NF}' | tr -d '"')
+        wm_name=$(xprop -id "$xpropid" WM_NAME | awk '{print $NF}' | tr -d '"')
+        [[ "$wm_class" != "eww" && "$wm_name" != "bluetooth" ]] && break
+    done
+    hide_bluetooth
 else
     hide_bluetooth
 fi

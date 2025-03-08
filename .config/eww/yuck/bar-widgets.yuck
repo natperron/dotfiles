@@ -24,7 +24,7 @@
     :spacing 5
     :halign "end"
     (music)
-    (settings)
+    (settings :monitor monitor)
     ; (battery :monitor monitor)
     (tray)))
 
@@ -35,7 +35,7 @@
     (button 
       :class "block launcher"
       :onclick "rofi -show drun -show-icons &"
-      :onrightclick "rofi -show power-menu -modi power-menu:rofi-power-menu -config ~/.config/rofi/config-power.rasi &"
+      :onrightclick "rofi -show power-menu -modi power-menu:rofi-power-menu -config ~/.config/rofi/config-power.rasi"
       "")))
 
 (defwidget workspaces [monitor]
@@ -114,16 +114,16 @@
       :cursor "pointer"
       (button
         :class {player.player ? "launch-music" : "launch-music closed"}
-        :onclick "~/.config/eww/scripts/open-spotify.sh &"
+        :onclick "~/.config/eww/scripts/open-spotify.sh"
         "󰎇"))))
 
-(defwidget settings []
+(defwidget settings [monitor]
   (box
     :class "block settings"
     (eventbox
       :cursor "pointer"
       (button
-        :onclick "~/.config/eww/scripts/open-bluetooth.sh ${bluetoothopen} &"
+        :onclick "~/.config/eww/scripts/open-bluetooth.sh ${monitor} &"
         (image
           :class "bluetooth-icon"
           :icon "${bluetoothstatus.icon}")))))
@@ -152,5 +152,5 @@
     (eventbox
       :cursor "pointer"
       (button
-        :onclick "~/.config/eww/scripts/open-tray.sh ${tray} &"
+        :onclick "~/.config/eww/scripts/open-tray.sh"
         ""))))

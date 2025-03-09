@@ -153,4 +153,4 @@
       :cursor "pointer"
       (button
         :onclick "~/.config/eww/scripts/open-tray.sh"
-        ""))))
+        ""))))

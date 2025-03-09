@@ -9,3 +9,5 @@
 (defvar batterypercent false)
 (defvar tray false)
 (defvar bluetoothopen false)
+(defvar bluetoothpicker false)
+(defvar pickerhover "")

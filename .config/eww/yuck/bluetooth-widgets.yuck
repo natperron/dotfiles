@@ -1,11 +1,11 @@
-(defwidget bluetooth []
+(defwidget bluetooth [monitor]
   (box
     :class "window"
     :orientation "vertical"
     :space-evenly false
     (bluetooth-title)
     (bluetooth-message)
-    (bluetooth-devices)))
+    (bluetooth-devices :monitor monitor)))
 
 (defwidget bluetooth-title []
   (box
@@ -21,9 +21,9 @@
     (eventbox
       :cursor "pointer"
       :active {bluetoothstatus.scanning ? false : true}
+      :halign "end"
       (button
         :class "button scan-button ${bluetoothstatus.scanning ? "disabled" : ""}"
-        :halign "end"
         :tooltip "Scan"
         :active {bluetoothstatus.scanning ? false : true}
         :width 32
@@ -32,9 +32,9 @@
         ""))
     (eventbox
       :cursor "pointer"
+      :halign "end"
       (button
         :class "button power-button ${bluetoothstatus.powered ? "on" : ""}"
-        :halign "end"
         :width 32
         :height 32
         :tooltip {bluetoothstatus.powered ? "Power Off" : "Power On"}
@@ -51,7 +51,7 @@
       :text "Bluetooth is off"
       :halign "center")))
 
-(defwidget bluetooth-devices []
+(defwidget bluetooth-devices [monitor]
   (scroll
     :vscroll true
     :vexpand true
@@ -67,16 +67,51 @@
           :class "device"
           :orientation "horizontal"
           :valign "start"
+          :hexpand true
+          :spacing 5
+          :space-evenly false
           (label
             :halign "start"
+            :hexpand true
             :text "${device.name}")
           (eventbox
             :cursor "pointer"
+            :halign "end"
+            (button
+              :class "button"
+              :width 32
+              :height 32
+              :visible {device.card_id != "null" ? true : false}
+              :tooltip "Audio profile"
+              :onclick "~/.config/eww/scripts/open-bluetooth-picker.sh '${device.profiles}' ${device.card_id} ${monitor} 140"
+              ""))
+          (eventbox
+            :cursor "pointer"
+            :halign "end"
             (button
               :class "button ${device.connected ? "disconnect-button" : "connect-button"}"
-              :halign "end"
               :width 32
               :height 32
               :tooltip {device.connected ? "Disconnect" : "Connect"}
               :onclick "bluetoothctl ${device.connected ? "disconnect" : "connect"} ${device.id}"
               {device.connected ? "󱘖" : ""})))))))
+
+(defwidget picker [items onchange]
+  (box
+    :class "window"
+    :orientation "vertical"
+    :hexpand true
+    :spacing 2
+    :space-evenly false
+    (for item in items
+      (eventbox
+        :cursor "pointer"
+        :onhover "eww update pickerhover=\"${item.id}\""
+        :onhoverlost {pickerhover != item.id ? "" : "eww update pickerhover=\"\""}
+        (button
+          :hexpand true
+          :class "picker-item ${pickerhover == item.id ? "hovered" : ""}"
+          :onclick "${onchange} ${item.id}"
+          (label
+            :halign "start"
+            :text "${item.name}"))))))

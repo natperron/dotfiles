@@ -30,3 +30,12 @@ button.button {
 .button.disabled {
   opacity: 0.5;
 }
+
+.picker-item {
+  padding: 0px 8px 2px 8px;
+  border-radius: $border-radius;
+}
+
+.hovered {
+  background-color: $background-alt;
+}

@@ -1,6 +1,5 @@
 #!/bin/bash
 show_bluetooth_picker() {
-    eww update bluetoothpicker=true
     eww open picker --screen $4 \
         --anchor "top right" \
         --id "bluetooth-audio-profile" \
@@ -12,11 +11,10 @@ show_bluetooth_picker() {
 }
 
 hide_bluetooth_picker() {
-    eww update bluetoothpicker=false
     eww close bluetooth-audio-profile
 }
 
-if [[ $(eww get bluetoothpicker) == false ]]; then
+if [ -z $(eww active-windows | grep bluetooth-audio-profile) ]; then
     show_bluetooth_picker "$1" "$2" "$3" "$4" "$5"
     while i3-msg -t subscribe '["window"]' > /dev/null; do
         sleep 0.5

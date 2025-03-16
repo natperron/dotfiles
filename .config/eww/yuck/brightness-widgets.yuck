@@ -1,0 +1,33 @@
+(defwidget brightness-content []
+  (box
+    :vexpand true
+    :orientation "vertical"
+    :space-evenly false
+    (brightness-message)
+    (brightness-devices)))
+
+(defwidget brightness-message []
+  (box
+    :valign "start"
+    :halign "center"
+    :visible {brightness.has_backlight ? false : true}
+    (label
+      :text "No brightness control available"
+      :halign "center")))
+
+(defwidget brightness-devices []
+  (scroll
+    :vscroll true
+    :vexpand true
+    :visible {brightness.has_backlight ? true : false}
+    (box
+      :class "devices"
+      :orientation "vertical"
+      :vexpand true
+      :space-evenly false
+      :spacing 5
+      (scale 
+        :min 0 
+        :max {brightness.max}
+        :value {brightness.current}
+        :onchange "brightnessctl --class=backlight set {}"))))

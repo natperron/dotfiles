@@ -35,7 +35,6 @@
             
 (defwidget bluetooth-message []
   (box
-    :class "message"
     :valign "start"
     :halign "center"
     :visible {bluetoothstatus.powered ? false : true}

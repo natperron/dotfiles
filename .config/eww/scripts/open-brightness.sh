@@ -1,23 +1,22 @@
 #!/bin/bash
-show_bluetooth() {
-    eww close brightness
-    eww update bluetoothselected=""
+show_brightness() {
+    eww close bluetooth bluetooth-audio-profile
     eww open systemwidget \
+        --id "brightness"  \
         --screen $1 \
         --toggle \
         --arg monitor=$1 \
-        --arg title="Bluetooth" \
-        --arg titlecontent="(bluetooth-titlecontent)" \
-        --arg body="(bluetooth-content :monitor monitor)" \
-        --id "bluetooth"
+        --arg title="Brightness" \
+        --arg titlecontent="" \
+        --arg body="(brightness-content)"
 }
 
-hide_bluetooth() {
-    eww close bluetooth bluetooth-audio-profile
+hide_brightness() {
+    eww close brightness
 }
 
-if [ -z $(eww active-windows | grep bluetooth) ]; then
-    show_bluetooth $1
+if [ -z $(eww active-windows | grep brightness) ]; then
+    show_brightness $1
     while i3-msg -t subscribe '["window"]' > /dev/null; do
         sleep 0.5
         xpropid=$(xprop -root 32x '\t$0' _NET_ACTIVE_WINDOW | cut -f 2)
@@ -26,7 +25,7 @@ if [ -z $(eww active-windows | grep bluetooth) ]; then
         wm_name=$(xprop -id "$xpropid" WM_NAME | awk '{print $NF}' | tr -d '"')
         [[ "$wm_class" != "eww" && "$wm_name" != "systemwidget" && "$wm_name" != "picker" ]] && break
     done
-    hide_bluetooth
+    hide_brightness
 else
-    hide_bluetooth
+    hide_brightness
 fi

@@ -124,9 +124,12 @@
       :cursor "pointer"
       (button
         :onclick "~/.config/eww/scripts/open-bluetooth.sh ${monitor} &"
-        (image
-          :class "bluetooth-icon"
-          :icon "${bluetoothstatus.icon}")))))
+        (image :icon "${bluetoothstatus.icon}")))
+    (eventbox
+      :cursor "pointer"
+      (button
+        :onclick "~/.config/eww/scripts/open-brightness.sh ${monitor} &"
+        (image :icon "${brightness.icon}")))))
 
 (defwidget battery [monitor]
   (box

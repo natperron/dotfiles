@@ -1,12 +1,13 @@
 #!/bin/bash
 show_bluetooth_picker() {
     eww update bluetoothpicker=true
-    eww open picker --screen $3 \
+    eww open picker --screen $4 \
         --anchor "top right" \
         --id "bluetooth-audio-profile" \
         --arg items="$1" \
         --arg onchange="~/.config/eww/scripts/set-bluetooth-profile.sh $2" \
-        --arg y="$4" \
+        --arg selected="$3" \
+        --arg y="$5" \
         --arg x="-58"
 }
 
@@ -16,7 +17,7 @@ hide_bluetooth_picker() {
 }
 
 if [[ $(eww get bluetoothpicker) == false ]]; then
-    show_bluetooth_picker "$1" "$2" "$3" "$4"
+    show_bluetooth_picker "$1" "$2" "$3" "$4" "$5"
     while i3-msg -t subscribe '["window"]' > /dev/null; do
         sleep 0.5
         xpropid=$(xprop -root 32x '\t$0' _NET_ACTIVE_WINDOW | cut -f 2)

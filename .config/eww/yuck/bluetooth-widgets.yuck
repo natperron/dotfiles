@@ -62,41 +62,89 @@
       :vexpand true
       :space-evenly false
       :spacing 5
-      (for device in bluetoothdevices
-        (box
-          :class "device"
-          :orientation "horizontal"
-          :valign "start"
-          :hexpand true
-          :spacing 5
-          :space-evenly false
-          (label
-            :halign "start"
-            :hexpand true
-            :text "${device.name}")
-          (eventbox
-            :cursor "pointer"
-            :halign "end"
-            (button
-              :class "button"
-              :width 32
-              :height 32
-              :visible {device.card_id != "null" ? true : false}
-              :tooltip "Audio profile"
-              :onclick "~/.config/eww/scripts/open-bluetooth-picker.sh '${device.profiles}' ${device.card_id} ${monitor} 140"
-              ""))
-          (eventbox
-            :cursor "pointer"
-            :halign "end"
-            (button
-              :class "button ${device.connected ? "disconnect-button" : "connect-button"}"
-              :width 32
-              :height 32
-              :tooltip {device.connected ? "Disconnect" : "Connect"}
-              :onclick "bluetoothctl ${device.connected ? "disconnect" : "connect"} ${device.id}"
-              {device.connected ? "󱘖" : ""})))))))
+      (for device in bluetoothdevices        
+        (bluetoothdevice :device device :monitor monitor)))))
 
-(defwidget picker [items onchange]
+(defwidget bluetoothdevice [device monitor]
+  (eventbox
+    :class "device-eventbox"
+    :cursor "pointer"
+    :onclick {bluetoothcanexpand ?
+      "~/.config/eww/scripts/open-bluetooth-selected.sh ${device.id}" :
+      ""}
+    (box
+      :class "device-box"
+      :orientation "vertical"
+      :space-evenly false
+      (box
+        :class "device"
+        :orientation "horizontal"
+        :valign "start"
+        :hexpand true
+        :spacing 5
+        :space-evenly false
+        (label
+          :halign "start"
+          :hexpand true
+          :text "${device.name}")
+        (eventbox
+          :cursor "pointer"
+          :halign "end"
+          :onhover "eww update bluetoothcanexpand=false"
+          :onhoverlost "eww update bluetoothcanexpand=true"
+          (button
+            :class "button ${device.connected ? "disconnect-button" : "connect-button"}"
+            :width 32
+            :height 32
+            :tooltip {device.connected ? "Disconnect" : "Connect"}
+            :onclick "bluetoothctl ${device.connected ? "disconnect" : "connect"} ${device.id}"
+            {device.connected ? "󱘖" : ""})))
+      (revealer
+        :transition "slidedown"
+        :reveal {bluetoothselected == device.id ? true : false}
+          (box
+            :orientation "vertical"
+            :spacing 5
+            :hexpand true
+            :style "padding-top: 5px"
+            :space-evenly false
+            (label 
+              :halign "start"
+              :text "MAC Address: ${device.id}")
+            (box
+              :orientation "horizontal"
+              :spacing 5
+              :visible {device.card_id != "null" ? true : false}
+              :space-evenly false
+
+              (label 
+                :halign "start"
+                :text "Audio Profile:")
+              (eventbox
+                :cursor "pointer"
+                :hexpand true
+                :height 32
+                :tooltip "Audio profile"
+                :onhover "eww update bluetoothcanexpand=false"
+                :onhoverlost "eww update bluetoothcanexpand=true"
+                :class "button"
+                :onclick "~/.config/eww/scripts/open-bluetooth-picker.sh '${device.profiles}' ${device.card_id} ${device.selected_profile.index} ${monitor} 140"
+                (box
+                  :orientation "horizontal"
+                  :space-evenly false
+                  :spacing 5
+                  :style "padding-right: 8px; padding-left: 8px"
+                  (label
+                    :halign "start"
+                    :hexpand true
+                    :truncate true
+                    :text "${device.selected_profile.name}")
+                  (label
+                    :halign "end"
+                    :text "")))))))))
+
+
+(defwidget picker [items onchange ?selected]
   (box
     :class "window"
     :orientation "vertical"
@@ -105,12 +153,13 @@
     :space-evenly false
     (for item in items
       (eventbox
+        :active {selected == item.id ? false : true}
         :cursor "pointer"
         :onhover "eww update pickerhover=\"${item.id}\""
         :onhoverlost {pickerhover != item.id ? "" : "eww update pickerhover=\"\""}
         (button
           :hexpand true
-          :class "picker-item ${pickerhover == item.id ? "hovered" : ""}"
+          :class "picker-item ${pickerhover == item.id ? "hovered" : ""} ${selected == item.id ? "selected" : ""}"
           :onclick "${onchange} ${item.id}"
           (label
             :halign "start"

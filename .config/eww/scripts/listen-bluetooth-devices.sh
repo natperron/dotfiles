@@ -2,22 +2,17 @@
 
 get_audio_profiles() {
   card_name="bluez_card.${1//:/_}"
-  card_id=$(pw-cli list-objects | grep $card_name -B 6 | grep -e "id " | head -1 | awk {'print $2'} | cut -d ',' -f 1) 
-  
-  [ -z $card_id ] && echo ",\"card_id\":null,\"profiles\":[]" && return
-
-  json_output=",\"card_id\":$card_id,\"profiles\":["
-
-  profiles=$(pw-cli e "$card_name" EnumProfile | grep -A 1 -e "Profile.index" -e "Profile.description" | grep -e "Int" -e "String \"")
-
-  while IFS= read -r id && IFS= read -r name; do
-    parsed_id=$(echo "$id" | awk {'print $2'})
-    parsed_name=$(echo "$name" | cut -d '"' -f 2)
-    json_output+="{\"id\":$parsed_id,\"name\":\"$parsed_name\"},"
-  done <<< "$profiles"
-
-  json_output="${json_output%,}]"
-  echo "$json_output"
+  pw-dump | \
+    jq -c --arg card_name "$card_name" '.[]
+    | select(.info.props."device.name" == $card_name)
+    | {
+      card_id: .id, 
+      selected_profile: .info.params.Profile.[0] | {id: .index, name: .description},
+      profiles: .info.params.EnumProfile | map({
+        id: .index,
+        name: .description
+      })
+    }'
 }
 
 get_bluetooth_devices() {
@@ -30,13 +25,15 @@ get_bluetooth_devices() {
     device_name=$(echo "$line" | cut -d ' ' -f 3-)
     paired=$(bluetoothctl info "$device_id" | grep -q "Paired: yes" && echo "true" || echo "false")
     connected=$(bluetoothctl info "$device_id" | grep -q "Connected: yes" && echo "true" || echo "false")
+    audio_profiles=$(get_audio_profiles $device_id)
 
-    json_output+="{\"id\":\"$device_id\",\"name\":\"$device_name\",\"paired\":$paired,\"connected\":$connected"
-    json_output+=$(get_audio_profiles "$device_id")
-    json_output+="},"
+
+    device="{\"id\":\"$device_id\",\"name\":\"$device_name\",\"paired\":$paired,\"connected\":$connected,\"card_id\":null}"
+    # device=$(jq --argjson device "$device" --argjson audio_profiles "$audio_profiles" '$device * $audio_profiles')
+
+    json_output+="$(echo "$device" "$audio_profiles" | jq -c -s 'add'),"
   done <<< "$devices"
 
-  # Remove the trailing comma and close the JSON array
   json_output="${json_output%,}]"
 
   # Print the JSON output

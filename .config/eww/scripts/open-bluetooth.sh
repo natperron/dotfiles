@@ -1,5 +1,6 @@
 #!/bin/bash
 show_bluetooth() {
+    eww update bluetoothselected=""
     eww update bluetoothopen=true
     eww open bluetooth --screen $1 --arg monitor=$1
 }

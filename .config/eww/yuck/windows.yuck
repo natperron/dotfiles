@@ -19,7 +19,7 @@
       :anchor "top right")
   (bluetooth :monitor monitor))
 
-(defwindow picker [items onchange x y]
+(defwindow picker [items onchange ?selected x y]
   :windowtype "dialog"
   :geometry 
     (geometry
@@ -28,5 +28,6 @@
       :anchor "top right")
   (picker 
     :items items
-    :onchange onchange))
+    :onchange onchange
+    :selected selected))
   

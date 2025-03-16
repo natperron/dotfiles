@@ -9,4 +9,9 @@
 .window {
   background: $background;
   padding: 10px;
+  border: 1px solid $secondary;
+}
+
+tooltip > * {
+  padding: 0px 4px 4px 4px;
 }

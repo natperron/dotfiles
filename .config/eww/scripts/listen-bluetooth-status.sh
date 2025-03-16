@@ -1,19 +1,19 @@
 #!/bin/bash
 
 get_bluetooth_status() {
-    icon="bluetooth-offline"  # Bluetooth powered off icon
+    icon="bluetooth-offline" 
     powered=$(bluetoothctl show | grep "Powered: yes" &> /dev/null && echo true || echo false)
     scanning=$(bluetoothctl show | grep "Discovering: yes" &> /dev/null && echo true || echo false)
-    
+
     if $powered; then
         if bluetoothctl info | grep -q "Connected: yes"; then
-            icon="bluetooth-paired"  # Bluetooth connected icon
+            icon="bluetooth-paired"
         else
-            icon="bluetooth-online"  # Bluetooth disconnected icon
+            icon="bluetooth-online"
         fi
     fi
 
-    echo "{\"icon\":\"$icon\",\"powered\": $powered,\"scanning\": $scanning}"
+    echo "{\"icon\":\"$icon\",\"powered\":$powered,\"scanning\":$scanning}"
 }
 
 get_bluetooth_status

@@ -24,7 +24,7 @@ if [[ $(eww get bluetoothpicker) == false ]]; then
         [[ "$xpropid" == "0x0" || "$xpropid" == "" ]] && break
         wm_class=$(xprop -id "$xpropid" WM_CLASS | awk '{print $NF}' | tr -d '"')
         wm_name=$(xprop -id "$xpropid" WM_NAME | awk '{print $NF}' | tr -d '"')
-        [[ "$wm_class" != "eww" && "$wm_name" != "bluetooth" && "$wm_name" != "picker" ]] && break
+        [[ "$wm_class" != "eww" && "$wm_name" != "picker" ]] && break
     done
     hide_bluetooth_picker
 else

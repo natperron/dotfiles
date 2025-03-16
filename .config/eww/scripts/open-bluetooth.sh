@@ -1,8 +1,14 @@
 #!/bin/bash
 show_bluetooth() {
     eww update bluetoothselected=""
-    eww update bluetoothopen=true
-    eww open bluetooth --screen $1 --arg monitor=$1
+    eww open systemwidget \
+        --id "bluetooth"  \
+        --screen $1 \
+        --toggle \
+        --arg monitor=$1 \
+        --arg title="Bluetooth" \
+        --arg titlecontent="(bluetooth-titlecontent)" \
+        --arg body="(bluetooth-content :monitor monitor)"
 }
 
 hide_bluetooth() {
@@ -20,7 +26,7 @@ if [[ $(eww get bluetoothopen) == false ]]; then
         [[ "$xpropid" == "0x0" || "$xpropid" == "" ]] && break
         wm_class=$(xprop -id "$xpropid" WM_CLASS | awk '{print $NF}' | tr -d '"')
         wm_name=$(xprop -id "$xpropid" WM_NAME | awk '{print $NF}' | tr -d '"')
-        [[ "$wm_class" != "eww" && "$wm_name" != "bluetooth" && "$wm_name" != "picker" ]] && break
+        [[ "$wm_class" != "eww" && "$wm_name" != "systemwidget" && "$wm_name" != "picker" ]] && break
     done
     hide_bluetooth
 else

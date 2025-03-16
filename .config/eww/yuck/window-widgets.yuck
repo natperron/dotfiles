@@ -1,0 +1,41 @@
+(defwidget systemwidget [monitor body title ?titlecontent]
+  (box
+    :class "window"
+    :orientation "vertical"
+    :space-evenly false
+    (systemwidget-title :title title :titlecontent titlecontent)
+    (literal :vexpand true :content body)))
+
+(defwidget systemwidget-title [title ?titlecontent]
+  (box
+    :class "header"
+    :valign "start"
+    :space-evenly false
+    :spacing 5
+    (label
+      :class "title"
+      :halign "start"
+      :hexpand true
+      :text title)
+    (literal :content titlecontent)))
+
+(defwidget picker [items onchange ?selected]
+  (box
+    :class "window"
+    :orientation "vertical"
+    :hexpand true
+    :spacing 2
+    :space-evenly false
+    (for item in items
+      (eventbox
+        :active {selected == item.id ? false : true}
+        :cursor "pointer"
+        :onhover "eww update pickerhover=\"${item.id}\""
+        :onhoverlost {pickerhover != item.id ? "" : "eww update pickerhover=\"\""}
+        (button
+          :hexpand true
+          :class "picker-item ${pickerhover == item.id ? "hovered" : ""} ${selected == item.id ? "selected" : ""}"
+          :onclick "${onchange} ${item.id}"
+          (label
+            :halign "start"
+            :text "${item.name}"))))))

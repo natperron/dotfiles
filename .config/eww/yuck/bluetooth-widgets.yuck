@@ -1,27 +1,12 @@
-(defwidget bluetooth [monitor]
-  (box
-    :class "window"
-    :orientation "vertical"
-    :space-evenly false
-    (bluetooth-title)
-    (bluetooth-message)
-    (bluetooth-devices :monitor monitor)))
 
-(defwidget bluetooth-title []
+(defwidget bluetooth-titlecontent []
   (box
-    :class "header"
-    :valign "start"
-    :space-evenly false
+    :halign "end"
     :spacing 5
-    (label
-      :class "title"
-      :halign "start"
-      :hexpand true
-      :text "Bluetooth")
+    :space-evenly false
     (eventbox
       :cursor "pointer"
       :active {bluetoothstatus.scanning ? false : true}
-      :halign "end"
       (button
         :class "button scan-button ${bluetoothstatus.scanning ? "disabled" : ""}"
         :tooltip "Scan"
@@ -30,17 +15,24 @@
         :height 32
         :onclick "~/.config/eww/scripts/scan-bluetooth.sh"
         ""))
-    (eventbox
-      :cursor "pointer"
-      :halign "end"
-      (button
-        :class "button power-button ${bluetoothstatus.powered ? "on" : ""}"
-        :width 32
-        :height 32
-        :tooltip {bluetoothstatus.powered ? "Power Off" : "Power On"}
-        :onclick "bluetoothctl power ${bluetoothstatus.powered ? "off" : "on"}"
-        ""))))
+        (eventbox
+          :cursor "pointer"
+          (button
+            :class "button power-button ${bluetoothstatus.powered ? "on" : ""}"
+            :width 32
+            :height 32
+            :tooltip {bluetoothstatus.powered ? "Power Off" : "Power On"}
+            :onclick "bluetoothctl power ${bluetoothstatus.powered ? "off" : "on"}"
+            ""))))
 
+(defwidget bluetooth-content [monitor]
+  (box
+    :vexpand true
+    :orientation "vertical"
+    :space-evenly false
+    (bluetooth-message)
+    (bluetooth-devices :monitor monitor)))
+            
 (defwidget bluetooth-message []
   (box
     :class "message"
@@ -128,7 +120,7 @@
                 :onhover "eww update bluetoothcanexpand=false"
                 :onhoverlost "eww update bluetoothcanexpand=true"
                 :class "button"
-                :onclick "~/.config/eww/scripts/open-bluetooth-picker.sh '${device.profiles}' ${device.card_id} ${device.selected_profile.index} ${monitor} 140"
+                :onclick "~/.config/eww/scripts/open-bluetooth-picker.sh '${device.profiles}' ${device.card_id} ${device.selected_profile.id} ${monitor} 140"
                 (box
                   :orientation "horizontal"
                   :space-evenly false
@@ -142,25 +134,3 @@
                   (label
                     :halign "end"
                     :text "")))))))))
-
-
-(defwidget picker [items onchange ?selected]
-  (box
-    :class "window"
-    :orientation "vertical"
-    :hexpand true
-    :spacing 2
-    :space-evenly false
-    (for item in items
-      (eventbox
-        :active {selected == item.id ? false : true}
-        :cursor "pointer"
-        :onhover "eww update pickerhover=\"${item.id}\""
-        :onhoverlost {pickerhover != item.id ? "" : "eww update pickerhover=\"\""}
-        (button
-          :hexpand true
-          :class "picker-item ${pickerhover == item.id ? "hovered" : ""} ${selected == item.id ? "selected" : ""}"
-          :onclick "${onchange} ${item.id}"
-          (label
-            :halign "start"
-            :text "${item.name}"))))))

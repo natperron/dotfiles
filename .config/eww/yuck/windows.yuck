@@ -8,7 +8,7 @@
       :anchor "top center")
   (bar :monitor monitor))
 
-(defwindow bluetooth [monitor]
+(defwindow systemwidget [monitor body title ?titlecontent]
   :windowtype "dialog"
   :geometry 
     (geometry
@@ -17,7 +17,11 @@
       :width "400px"
       :height "300px"
       :anchor "top right")
-  (bluetooth :monitor monitor))
+  (systemwidget 
+    :monitor monitor 
+    :body body 
+    :title title 
+    :titlecontent titlecontent))
 
 (defwindow picker [items onchange ?selected x y]
   :windowtype "dialog"

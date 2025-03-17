@@ -135,6 +135,7 @@
   (eventbox
     :cursor "pointer"
     :style "font-size: 16px"
+    :visible {brightness.has_backlight ? true : false}
     (button
       :onclick "~/.config/eww/scripts/open-brightness.sh ${monitor} &"
       ; (image :icon "${brightness.icon}")
@@ -146,6 +147,7 @@
     :onclick {batterypercent == monitor ? 
       "eww update batterypercent=\"\"" : 
       "eww update batterypercent=${monitor}"}
+    :visible {battery.has_battery ? true : false}
     (box
       :space-evenly false
       (image :icon "${battery.icon}")

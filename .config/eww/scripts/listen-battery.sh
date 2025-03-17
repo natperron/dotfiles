@@ -1,14 +1,16 @@
 #!/bin/bash
 
 get_battery() {
+    has_battery=true
     status=$(upower -i /org/freedesktop/UPower/devices/battery_BAT0 | awk '/state:/ {print $2}')
     percent=$(upower -i /org/freedesktop/UPower/devices/battery_BAT0 | awk '/percentage:/ {print substr($2, 1, length($2)-1)}')
     icon=""
 
-    if [ $warning_sent ] && [ $status != 'discharging' ]; then
+    [ -z $status ] && has_battery=false
+    if [ $warning_sent ] && [[ $status != 'discharging' ]]; then
         warning_sent=false
     fi
-    if [ ! $warning_sent ] && [ $status == 'discharging' ] && [ $percent -lt 10 ]; then
+    if [ ! $warning_sent ] && [[ $status == 'discharging' ]] && [ $percent -lt 10 ]; then
         notify-send "Low Battery!";
         warning_sent=true
     fi
@@ -37,15 +39,15 @@ get_battery() {
         icon="battery-000"
     fi
     
-    if [ $status != 'discharging' ]; then
+    if [[ $status != 'discharging' ]]; then
         icon="${icon}-charging"
     fi
 
-    echo "{\"icon\":\"$icon\",\"percent\":\"$percent\"}"
+    echo "{\"icon\":\"$icon\",\"percent\":\"$percent\",\"has_battery\":$has_battery}"
 }
 
 get_battery
-dbus-monitor --system --profile "path=/org/freedesktop/UPower/devices/battery_BAT0,member=PropertiesChanged" |
+dbus-monitor --system --profile "path=/org/freedesktop/UPower/devices/battery_BAT0,member=PropertiesChanged" 2> /dev/null |
 while read -r line; do
     get_battery
 done

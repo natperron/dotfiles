@@ -21,13 +21,16 @@
     :vexpand true
     :visible {brightness.has_backlight ? true : false}
     (box
-      :class "devices"
       :orientation "vertical"
       :vexpand true
       :space-evenly false
       :spacing 5
-      (scale 
-        :min 0 
+      (scale
+        :class "custom-slider"
+        :height 32
+        :orientation "horizontal"
+        :min 0
         :max {brightness.max}
         :value {brightness.current}
-        :onchange "brightnessctl --class=backlight set {}"))))
+        :round-digits 0
+        :onchange "~/.config/eww/scripts/set-brightness.sh {} &"))))

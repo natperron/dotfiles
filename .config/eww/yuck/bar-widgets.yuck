@@ -91,20 +91,20 @@
       (button
         :class "song-prev"
         :visible {player.player ? true : false}
-        :onclick "playerctl -p spotify,Feishin previous"
+        :onclick "playerctl previous"
         "󰒮"))
     (eventbox
       :cursor "pointer"
       (button
         :visible {player.player ? true : false}
-        :onclick "playerctl -p spotify,Feishin play-pause" 
+        :onclick "playerctl play-pause" 
         (label :text {player.playing ? "󰏤" : "󰐊"})))
     (eventbox
       :cursor "pointer"
       (button
         :class "song-next"
         :visible {player.player ? true : false}
-        :onclick "playerctl -p spotify,Feishin next"
+        :onclick "playerctl next"
         "󰒭"))
     (label 
       :class "separator" 
@@ -120,34 +120,35 @@
 (defwidget settings [monitor]
   (box
     :class "block settings"
+    :space-evenly false
     (eventbox
       :cursor "pointer"
       (button
         :onclick "~/.config/eww/scripts/open-bluetooth.sh ${monitor} &"
         (image :icon "${bluetoothstatus.icon}")))
-    (eventbox
-      :cursor "pointer"
-      (button
-        :onclick "~/.config/eww/scripts/open-brightness.sh ${monitor} &"
-        (image :icon "${brightness.icon}")))))
-
-(defwidget battery [monitor]
-  (box
-    :class "block battery"
-    (eventbox
-      :onhover "eww update batterypercent=${monitor}"
-      :onhoverlost "eww update batterypercent=false"
-      (box
-        :class "battery-inner"
-        :space-evenly false
-        (label 
-          :class "battery-icon" 
-          :text "${battery.icon}")
-        (revealer
-          :class "battery-percent"
-          :transition "slideright"
-          :reveal {batterypercent == monitor}
-          "${battery.percent}%")))))
+        (eventbox
+          :cursor "pointer"
+          :style "font-size: 16px"
+          (button
+            :onclick "~/.config/eww/scripts/open-brightness.sh ${monitor} &"
+            ; (image :icon "${brightness.icon}")
+            "󰃟"))
+        (eventbox
+          :class "battery"
+          :onhover "eww update batterypercent=${monitor}"
+          :onhoverlost "eww update batterypercent=false"
+          (box
+            :class "battery-inner"
+            :space-evenly false
+            (label 
+              :class "battery-icon" 
+              :text "${battery.icon}")
+            (revealer
+              :class "battery-percent"
+              :transition "slideright"
+              :reveal {batterypercent == monitor}
+              "${battery.percent}%")))
+          ))
 
 (defwidget tray []
   (box

@@ -1,0 +1,15 @@
+scale trough highlight {
+  all: unset;
+  background-color: $secondary;
+  color: white;
+  border-radius: $border-radius;
+  min-width: 10px;
+  min-height: 32px;
+}
+scale trough {
+  all: unset;
+  background-color: $background-alt;
+  border-radius: 10px;
+  min-height: 32px;
+  min-width: 140px;
+}

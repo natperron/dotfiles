@@ -7,7 +7,7 @@ get_audio_profiles() {
     | select(.info.props."device.name" == $card_name)
     | {
       card_id: .id, 
-      selected_profile: .info.params.Profile.[0] | {id: .index, name: .description},
+      selected_profile: .info.params.Profile[0] | {id: .index, name: .description},
       profiles: .info.params.EnumProfile | map({
         id: .index,
         name: .description

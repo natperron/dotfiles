@@ -3,7 +3,7 @@ get_brightness() {
     has_backlight=$(brightnessctl --class=backlight &> /dev/null && echo "true" || echo "false")
     current=$(brightnessctl --class=backlight get 2> /dev/null || echo "0")
     max=$(brightnessctl --class=backlight max 2> /dev/null || echo "0")
-    percentage=$([ $max -gt 0 ] && (current * 100 / max) || echo "0")
+    percentage=$([ $max -gt 0 ] && echo $((current * 100 / max)) || echo "0")
     if [ "$percentage" -gt 70 ]; then
         icon="brightness-high-symbolic"
     elif [ "$percentage" -lt 30 ]; then

@@ -69,18 +69,25 @@ label {
 
 .settings {
   padding: 0;
-  button {
-    padding: 0px 8px;
+  > * > * {
+    padding: 0px 8px 0px 8px;
+  }
+  > *:first-child > * {
+    padding: 0px 4px 0px 8px;
+  }
+  > *:last-child > * {
+    padding: 0px 8px 0px 4px;
   }
 }
 
 .battery {
   padding: 0px;
   .battery-inner {
-    padding: 0px 10px;
+    padding: 0px 8px;
   }
   .battery-icon {
     font-family: $icon-font;
+    font-size: 16px;
   }
   .battery-percent {
     padding-left: 5px;

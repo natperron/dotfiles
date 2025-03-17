@@ -24,9 +24,7 @@
     :spacing 5
     :halign "end"
     (music)
-    (settings :monitor monitor)
-    ; (battery :monitor monitor)
-    (tray)))
+    (settings :monitor monitor)))
 
 (defwidget launcher []
   (eventbox
@@ -121,40 +119,48 @@
   (box
     :class "block settings"
     :space-evenly false
-    (eventbox
-      :cursor "pointer"
-      (button
-        :onclick "~/.config/eww/scripts/open-bluetooth.sh ${monitor} &"
-        (image :icon "${bluetoothstatus.icon}")))
-        (eventbox
-          :cursor "pointer"
-          :style "font-size: 16px"
-          (button
-            :onclick "~/.config/eww/scripts/open-brightness.sh ${monitor} &"
-            ; (image :icon "${brightness.icon}")
-            "󰃟"))
-        (eventbox
-          :class "battery"
-          :onhover "eww update batterypercent=${monitor}"
-          :onhoverlost "eww update batterypercent=false"
-          (box
-            :class "battery-inner"
-            :space-evenly false
-            (label 
-              :class "battery-icon" 
-              :text "${battery.icon}")
-            (revealer
-              :class "battery-percent"
-              :transition "slideright"
-              :reveal {batterypercent == monitor}
-              "${battery.percent}%")))
-          ))
+    (bluetooth-button :monitor monitor)
+    (brightness-button :monitor monitor)
+    (battery :monitor monitor)
+    (tray)))
+
+(defwidget bluetooth-button [monitor]
+  (eventbox
+    :cursor "pointer"
+    (button
+      :onclick "~/.config/eww/scripts/open-bluetooth.sh ${monitor} &"
+      (image :icon "${bluetoothstatus.icon}"))))
+
+(defwidget brightness-button [monitor]
+  (eventbox
+    :cursor "pointer"
+    :style "font-size: 16px"
+    (button
+      :onclick "~/.config/eww/scripts/open-brightness.sh ${monitor} &"
+      ; (image :icon "${brightness.icon}")
+      "󰃟")))
+
+(defwidget battery [monitor]
+  (eventbox
+    :class "battery"
+    :onclick {batterypercent == monitor ? 
+      "eww update batterypercent=\"\"" : 
+      "eww update batterypercent=${monitor}"}
+    (box
+      :class "battery-inner"
+      :space-evenly false
+      (label 
+        :class "battery-icon" 
+        :text "${battery.icon}")
+      (revealer
+        :class "battery-percent"
+        :transition "slideright"
+        :reveal {batterypercent == monitor}
+        "${battery.percent}%"))))
 
 (defwidget tray []
-  (box
-    :class "block tray"
-    (eventbox
-      :cursor "pointer"
-      (button
-        :onclick "~/.config/eww/scripts/open-tray.sh"
-        ""))))
+  (eventbox
+    :cursor "pointer"
+    (button
+      :onclick "~/.config/eww/scripts/open-tray.sh"
+      "")))

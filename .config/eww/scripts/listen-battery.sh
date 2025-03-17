@@ -14,27 +14,31 @@ get_battery() {
     fi
 
     if [ $percent -ge 98 ]; then
-        [ $status != 'discharging' ] && icon="󰂅" || icon="󰁹"
+        icon="battery-100"
     elif [ $percent -ge 90 ]; then
-        [ $status != 'discharging' ] && icon="󰂋" || icon="󰂂"
+        icon="battery-090"
     elif [ $percent -ge 80 ]; then
-        [ $status != 'discharging' ] && icon="󰂊" || icon="󰂁"
+        icon="battery-080"
     elif [ $percent -ge 70 ]; then
-        [ $status != 'discharging' ] && icon="󰢞" || icon="󰂀"
+        icon="battery-070"
     elif [ $percent -ge 60 ]; then
-        [ $status != 'discharging' ] && icon="󰂉" || icon="󰁿"    
+        icon="battery-060"
     elif [ $percent -ge 50 ]; then
-        [ $status != 'discharging' ] && icon="󰢝" || icon="󰁾"
+        icon="battery-050"
     elif [ $percent -ge 40 ]; then
-        [ $status != 'discharging' ] && icon="󰂈" || icon="󰁽"
+        icon="battery-040"
     elif [ $percent -ge 30 ]; then
-        [ $status != 'discharging' ] && icon="󰂇" || icon="󰁼"
+        icon="battery-030"
     elif [ $percent -ge 20 ]; then
-        [ $status != 'discharging' ] && icon="󰂆" || icon="󰁻"
+        icon="battery-020"
     elif [ $percent -ge 10 ]; then
-        [ $status != 'discharging' ] && icon="󰢜" || icon="󰁺"
+        icon="battery-010"
     else
-        [ $status != 'discharging' ] && icon="󰢜" || icon="󰂃"
+        icon="battery-000"
+    fi
+    
+    if [ $status != 'discharging' ]; then
+        icon="${icon}-charging"
     fi
 
     echo "{\"icon\":\"$icon\",\"percent\":\"$percent\"}"

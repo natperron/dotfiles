@@ -142,18 +142,15 @@
 
 (defwidget battery [monitor]
   (eventbox
-    :class "battery"
+    :cursor "pointer"
     :onclick {batterypercent == monitor ? 
       "eww update batterypercent=\"\"" : 
       "eww update batterypercent=${monitor}"}
     (box
-      :class "battery-inner"
       :space-evenly false
-      (label 
-        :class "battery-icon" 
-        :text "${battery.icon}")
+      (image :icon "${battery.icon}")
       (revealer
-        :class "battery-percent"
+        :style "padding-left: 4px"
         :transition "slideright"
         :reveal {batterypercent == monitor}
         "${battery.percent}%"))))

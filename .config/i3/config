@@ -13,7 +13,7 @@ bindsym XF86AudioPlay exec playerctl play-pause
 bindsym XF86AudioNext exec playerctl next
 bindsym XF86AudioPrev exec playerctl previous
 
-bindsym $mod+Return exec urxvt
+bindsym $mod+Return exec alacritty
 bindsym $mod+q kill
 bindsym $mod+Shift+q kill
 bindsym $mod+d exec rofi -modi drun -show drun -show-icons
@@ -119,6 +119,7 @@ focus_on_window_activation focus
 
 for_window [class="^.*"] border pixel 1
 for_window [class="stalonetray"] border pixel 0
+for_window [class="Eww"] border pixel 0
 for_window [class="Florence"] floating enable
 for_window [class="(.*join\?action\=join.*|.*zoom.*)"] floating enable
 for_window [class="(.*join\?action\=join.*|.*zoom.*)" title="Zoom - Licensed Account"] floating disable
@@ -138,14 +139,16 @@ set $indicator 		#bd93f9
 set $active-text	#f8f8f2	
 
 # 			border		background	text		indicator
-client.focused		$inactive-text	$inactive-text	$active-text	$text-color
-client.unfocused	$bg-color	$bg-color	$inactive-text	$text-color	
-client.focused_inactive	$bg-color	$bg-color	$inactive-text	$text-color	
-client.urgent		$bg-color	$bg-color	$urgent-fg	$text-color	
-client.focused_tab_title $inactive-text	$bg-color	$inactive-text	$text-color 
+client.focused		$bg-color	$inactive-text	$active-text	$text-color
+client.unfocused	$bg-color	$bg-color	$inactive-text	$bg-color	
+client.focused_inactive	$bg-color	$bg-color	$inactive-text	$bg-color	
+client.urgent		$bg-color	$bg-color	$urgent-fg	$bg-color
+client.focused_tab_title $inactive-text	$inactive-text	$inactive-text
 
-exec --no-startup-id picom --experimental-backends 
+client.background       $inactive-text
+client.placeholder      $inactive-text       $inactive-text  $bg-color       $bg-color       $bg-color
 exec --no-startup-id xrdb -merge ~/.config/X11/xresources
+exec --no-startup-id ~/.config/picom/launch.sh
 exec --no-startup-id ~/.config/eww/launch.sh
 exec --no-startup-id nm-applet 
 exec --no-startup-id blueman-applet 
@@ -156,3 +159,4 @@ exec --no-startup-id flameshot
 exec --no-startup-id ~/.config/feh/init.sh
 exec --no-startup-id /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1
 exec --no-startup-id dunst
+#exec --no-startup-id /usr/libexec/gsd-xsettings

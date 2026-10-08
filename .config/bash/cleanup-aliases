@@ -2,3 +2,4 @@
 alias wget='wget --hsts-file=~/.cache/wget-hsts'
 alias bogofilter='bogofilter --bogofilter-dir="~/.local/share/bogofilter"'
 alias yarn='yarn --use-yarnrc ~/.config/yarn/config'
+alias nvim='env -u VIMINIT nvim'

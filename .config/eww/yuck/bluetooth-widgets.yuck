@@ -88,7 +88,7 @@
             :width 32
             :height 32
             :tooltip {device.connected ? "Disconnect" : "Connect"}
-            :onclick "bluetoothctl ${device.connected ? "disconnect" : "connect"} ${device.id}"
+            :onclick "bluetoothctl ${device.connected ? "disconnect" : device.paired ? "connect" : "pair"} ${device.id}"
             {device.connected ? "󱘖" : ""})))
       (revealer
         :transition "slidedown"

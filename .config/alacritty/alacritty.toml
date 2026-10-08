@@ -1,0 +1,2 @@
+general.import = ["./dracula.toml"]
+window.opacity = 0.8

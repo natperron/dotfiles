@@ -5,6 +5,8 @@ gaps inner 10
 
 font pango:noto 10
 
+focus_follows_mouse yes
+
 floating_modifier $mod
 
 bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +5%
@@ -94,7 +96,7 @@ mode ""{
         bindsym $mod+r mode "default"
 }
 assign [class="Code"] $ws1
-assign [class="firefox-esr"] $ws2
+assign [class="firefox"] $ws2
 assign [class="discord"] $ws3
 assign [class="Slack"] $ws4
 assign [class="Evolution"] $ws5
@@ -102,7 +104,7 @@ assign [class="teams-for-linux"] $ws6
 assign [class="Spotify"] $ws8
 assign [class="feishin"] $ws8
 for_window [class="Code"] move to workspace $ws1 focus
-for_window [class="firefox-esr"] move to workspace $ws2 focus
+for_window [class="firefox"] move to workspace $ws2 focus
 for_window [class="discord"] move to workspace $ws3 focus
 for_window [class="Slack"] move to workspace $ws4 focus
 for_window [class="Evolution"] move to workspace $ws5 focus
@@ -130,6 +132,7 @@ for_window [window_role="task_dialog"] floating enable
 for_window [window_role="Preferences"] floating enable
 for_window [window_type="dialog"] floating enable
 for_window [window_type="menu"] floating enable
+for_window [class="Unity"] focus
 
 set $bg-color 		#282a36
 set $inactive-text	#6272a4
@@ -157,6 +160,8 @@ exec --no-startup-id autorandr -c
 exec --no-startup-id flameshot
 #exec --no-startup-id nitrogen --restore
 exec --no-startup-id ~/.config/feh/init.sh
-exec --no-startup-id /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1
+exec --no-startup-id ~/.config/i3/autostart.sh
+#exec --no-startup-id /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1
+exec --no-startup-id lxpolkit
 exec --no-startup-id dunst
 #exec --no-startup-id /usr/libexec/gsd-xsettings

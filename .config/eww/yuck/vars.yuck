@@ -14,6 +14,7 @@
 (defvar bluetoothselected "")
 (defvar bluetoothscanning false)
 (defvar bluetoothbusy "")
+(defvar bluetoothbusylabel "")
 (defvar audioselected "")
 (defvar audioexpanded "")
 (defvar audioview "devices")

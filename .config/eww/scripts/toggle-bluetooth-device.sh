@@ -14,7 +14,7 @@ if grep -q "Connected: yes" <<< "$info"; then
 fi
 
 if ! grep -q "Paired: yes" <<< "$info"; then
-    bluetoothctl --timeout 20 pair "$1" || exit 1
+    timeout 20 bluetoothctl pair "$1" || exit 1
     bluetoothctl trust "$1"
 fi
-bluetoothctl --timeout 20 connect "$1"
+timeout 20 bluetoothctl connect "$1"

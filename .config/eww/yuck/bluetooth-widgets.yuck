@@ -83,12 +83,13 @@
       (eventbox
         :cursor {bluetoothbusy == device.id ? "default" : "pointer"}
         (button
-          :class "button text-button ${device.connected ? "disconnect-button" : ""} ${bluetoothbusy == device.id ? "disabled" : ""}"
+          :class "button text-button ${(bluetoothbusy == device.id ? bluetoothbusylabel == "Disconnecting..." : device.connected) ? "disconnect-button" : ""} ${bluetoothbusy == device.id ? "disabled" : ""}"
           :height 32
           :active {bluetoothbusy != device.id}
-          :onclick "eww update bluetoothbusy=${device.id}; ~/.config/eww/scripts/toggle-bluetooth-device.sh ${device.id} &"
+          ; The busy label and style are picked on click, device.connected flips before the button is re-enabled
+          :onclick "eww update bluetoothbusy=${device.id} bluetoothbusylabel=${device.connected ? "Disconnecting..." : "Connecting..."}; ~/.config/eww/scripts/toggle-bluetooth-device.sh ${device.id} &"
           {bluetoothbusy == device.id
-            ? (device.connected ? "Disconnecting..." : "Connecting...")
+            ? bluetoothbusylabel
             : (device.connected ? "Disconnect" : device.paired ? "Connect" : "Pair")})))
     (revealer
       :transition "slidedown"

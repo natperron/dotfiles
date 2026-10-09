@@ -5,12 +5,18 @@ HIDDEN_APPS="fluidsynth"
 
 get_audio() {
   pw-dump | jq -c --arg hidden "$HIDDEN_APPS" '
+    # Some cards (e.g. USB mics) mute on the device route and leave the node
+    # Props untouched: "device id:route device" -> muted
+    (map(select(.type == "PipeWire:Interface:Device"))
+      | map(.id as $id | (.info.params.Route // [])[] | {key: "\($id):\(.device)", value: (.props.mute // false)})
+      | from_entries) as $route_mute
+
     # wpctl shows volumes on a cubic scale, pw-dump stores them linearly
-    def volume:
+    | def volume:
       ((.info.params.Props // []) | map(select(.channelVolumes)) | first // {}) as $props
       | {
         volume: (($props.channelVolumes // [0]) | add / length | pow(.; 1 / 3) * 100 | round),
-        muted: ($props.mute // false)
+        muted: (($props.mute // false) or ($route_mute["\(.info.props."device.id"):\(.info.props."card.profile.device")"] // false))
       };
 
     def icon:

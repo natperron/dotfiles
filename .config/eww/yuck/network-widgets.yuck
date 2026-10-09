@@ -69,6 +69,7 @@
               :icon "network-wired-symbolic"
               :name {dev.name}
               :key {dev.device}
+              :busy {dev.connecting}
               :onclick "eww update networkbusy=${dev.device}; ~/.config/eww/scripts/network-action.sh device ${dev.device} &"))))
       (box
         :visible {network.wifi_device != ""}
@@ -153,16 +154,17 @@
             (for conn in {network.saved}
               (network-saved :conn conn))))))))
 
-; Text button that turns into a disabled busy label while its action runs
-(defwidget network-action-button [key label busy_label onclick ?class]
+; Text button that turns into a disabled busy label while its action runs,
+; or while NetworkManager is connecting it (busy)
+(defwidget network-action-button [key label busy_label onclick ?class ?busy]
   (eventbox
-    :cursor {networkbusy == key ? "default" : "pointer"}
+    :cursor {networkbusy == key || busy == true ? "default" : "pointer"}
     (button
-      :class "button text-button ${class} ${networkbusy == key ? "disabled" : ""}"
+      :class "button text-button ${class} ${networkbusy == key || busy == true ? "disabled" : ""}"
       :height 32
-      :active {networkbusy != key}
+      :active {networkbusy != key && busy != true}
       :onclick onclick
-      {networkbusy == key ? busy_label : label})))
+      {networkbusy == key || busy == true ? busy_label : label})))
 
 (defwidget network-error [key]
   (label
@@ -174,7 +176,7 @@
     :text networkerrormsg))
 
 ; Simple card with a button (Connect by default), for wired devices and VPN import
-(defwidget network-row [icon name key onclick ?label ?busy_label]
+(defwidget network-row [icon name key onclick ?label ?busy_label ?busy]
   (box
     :class "item-card"
     :orientation "vertical"
@@ -192,6 +194,7 @@
         :key key
         :label {label ?: "Connect"}
         :busy_label {busy_label ?: "Connecting..."}
+        :busy busy
         :onclick onclick))
     (network-error :key key)))
 
@@ -226,6 +229,7 @@
         :key {vpn.uuid}
         :label "Connect"
         :busy_label "Connecting..."
+        :busy {vpn.connecting}
         :onclick "eww update networkbusy=${vpn.uuid}; ~/.config/eww/scripts/network-action.sh up ${vpn.uuid} &"))
     (network-error :key {vpn.uuid})
     (revealer
@@ -391,6 +395,7 @@
         :key {net.bssid}
         :label "Connect"
         :busy_label "Connecting..."
+        :busy {net.connecting}
         :onclick {net.saved_uuid != ""
           ? "eww update networkbusy=${net.bssid}; ~/.config/eww/scripts/network-action.sh up ${net.saved_uuid} ${net.bssid} &"
           : net.secured

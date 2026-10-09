@@ -1,12 +1,13 @@
 #!/bin/bash
 
 get_bluetooth_status() {
-    icon="bluetooth-offline" 
-    powered=$(bluetoothctl show | grep "Powered: yes" &> /dev/null && echo true || echo false)
-    scanning=$(bluetoothctl show | grep "Discovering: yes" &> /dev/null && echo true || echo false)
+    show=$(bluetoothctl show)
+    powered=false scanning=false icon="bluetooth-offline"
+    grep -q "Powered: yes" <<< "$show" && powered=true
+    grep -q "Discovering: yes" <<< "$show" && scanning=true
 
     if $powered; then
-        if bluetoothctl info | grep -q "Connected: yes"; then
+        if bluetoothctl devices Connected | grep -q "^Device"; then
             icon="bluetooth-paired"
         else
             icon="bluetooth-online"
@@ -18,9 +19,9 @@ get_bluetooth_status() {
 
 get_bluetooth_status
 
-dbus-monitor --system "sender='org.bluez',member=PropertiesChanged" 2> /dev/null | 
+dbus-monitor --system "type='signal',sender='org.bluez'" 2> /dev/null |
 while read -r line; do
-    if echo $line | grep "signal" > /dev/null; then
-        get_bluetooth_status
-    fi
+    [[ "$line" == signal* ]] || continue
+    while read -r -t 0.5 _; do :; done
+    get_bluetooth_status
 done

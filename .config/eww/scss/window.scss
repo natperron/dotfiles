@@ -1,0 +1,76 @@
+// Shared styles for systemwidget popups
+
+.header {
+  .title {
+    font-size: $title-font-size;
+  }
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid $secondary;
+}
+
+.message, .secondary {
+  color: $secondary;
+}
+
+.section-title {
+  color: $foreground;
+  font-weight: bold;
+}
+
+.button {
+  background-color: $background-alt;
+  border-radius: $border-radius;
+}
+
+.button.disabled {
+  opacity: 0.5;
+}
+
+.text-button {
+  padding: 0px 12px;
+}
+
+// Selectable row, e.g. audio profiles and output devices
+.list-item {
+  padding: 4px 8px;
+  border-radius: $border-radius;
+  &:hover {
+    background-color: $background-alt;
+  }
+  &.selected {
+    background-color: $background-alt;
+    color: $other;
+  }
+}
+
+// Bordered row that expands on click, e.g. bluetooth devices and audio cards
+.item-card {
+  border-radius: $border-radius;
+  padding: 3px 3px 3px 8px;
+  border: 2px solid $background;
+  &:hover, &.expanded {
+    border-color: $secondary;
+  }
+}
+
+.item-details {
+  padding-top: 3px;
+}
+
+scale trough highlight {
+  all: unset;
+  background-color: $secondary;
+  color: white;
+  border-radius: $border-radius;
+  min-width: 10px;
+  min-height: 32px;
+}
+
+scale trough {
+  all: unset;
+  background-color: $background-alt;
+  border-radius: 10px;
+  min-height: 32px;
+  min-width: 140px;
+}

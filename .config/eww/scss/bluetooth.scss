@@ -1,62 +1,15 @@
-.header {
-  .title {
-    font-size: $title-font-size;
-  }
-  padding-bottom: 8px;
-  margin-bottom: 8px;
-  border-bottom: 1px solid $secondary;
-}
-
-.button {
-  background-color: $background-alt;
-  border-radius: $border-radius;
-}
-
 .power-button.on {
   color: $danger;
 }
 
-.disconnect-button, .connect-button {
-  label {
-    font-size: 16px;
-    margin-top: 0px;
-  }
-}
-
-.disconnect-button {
+.disconnect-button, .forget-button {
   color: $danger;
 }
 
-.button.disabled {
-  opacity: 0.5;
+@keyframes spin {
+  to { -gtk-icon-transform: rotate(1turn); }
 }
 
-.device-box {
-  border-radius: $border-radius;
-  padding-left: 8px;
-  // border-left: 2px solid $background;
-  // border-top: 2px solid $background;
-  // border-bottom: 2px solid $background;
-  // margin-left: -2px;
-  // margin-right: -2px;
-  border: 2px solid $background;
-}
-
-.device-eventbox:hover {
-  .device-box {
-    border-color: $secondary;
-  }
-}
-
-.picker-item {
-  padding: 0px 8px 2px 8px;
-  border-radius: $border-radius;
-}
-
-.picker-item.selected {
-  opacity: 0.5;
-}
-
-.hovered {
-  background-color: $background-alt;
+.spinner {
+  animation: spin 2s linear infinite;
 }

@@ -119,16 +119,27 @@
   (box
     :class "block settings"
     :space-evenly false
+    (audio-button :monitor monitor)
     (bluetooth-button :monitor monitor)
     (brightness-button :monitor monitor)
     (battery :monitor monitor)
     (tray)))
 
+(defwidget audio-button [monitor]
+  (eventbox
+    :cursor "pointer"
+    :onscroll "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%$([ {} = up ] && echo + || echo -)"
+    (button
+      :tooltip "${audio.sink.name} (${audio.sink.volume}%)"
+      :onclick "~/.config/eww/scripts/popup.sh audio ${monitor} Audio '(audio-content)' '(audio-titlecontent)' &"
+      :onrightclick "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+      (image :icon {audio.sink.icon}))))
+
 (defwidget bluetooth-button [monitor]
   (eventbox
     :cursor "pointer"
     (button
-      :onclick "~/.config/eww/scripts/open-bluetooth.sh ${monitor} &"
+      :onclick "~/.config/eww/scripts/popup.sh bluetooth ${monitor} Bluetooth '(bluetooth-content)' '(bluetooth-titlecontent)' &"
       (image :icon "${bluetoothstatus.icon}"))))
 
 (defwidget brightness-button [monitor]
@@ -137,7 +148,7 @@
     :style "font-size: 16px"
     :visible {brightness.has_backlight ? true : false}
     (button
-      :onclick "~/.config/eww/scripts/open-brightness.sh ${monitor} &"
+      :onclick "~/.config/eww/scripts/popup.sh brightness ${monitor} Brightness '(brightness-content)' &"
       ; (image :icon "${brightness.icon}")
       "󰃟")))
 

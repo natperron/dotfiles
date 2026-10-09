@@ -1,50 +1,52 @@
 #!/bin/bash
 
-get_audio_profiles() {
-  card_name="bluez_card.${1//:/_}"
-  pw-dump | \
-    jq -c --arg card_name "$card_name" '.[]
-    | select(.info.props."device.name" == $card_name)
-    | {
-      card_id: .id, 
-      selected_profile: .info.params.Profile[0] | {id: .index, name: .description},
-      profiles: .info.params.EnumProfile | map({
-        id: .index,
-        name: .description
-      })
-    }'
-}
+# Nerd Font battery glyphs: outline, 10%, 20% ... 90%, full
+BATTERY_ICONS=(
+  $'\U000F008E' $'\U000F007A' $'\U000F007B' $'\U000F007C' $'\U000F007D' $'\U000F007E'
+  $'\U000F007F' $'\U000F0080' $'\U000F0081' $'\U000F0082' $'\U000F0079'
+)
 
 get_bluetooth_devices() {
-  devices=$(bluetoothctl devices)
+  bluetoothctl devices | while read -r kind mac name; do
+    # bluetoothctl can print [NEW]/[CHG] lines, only keep devices
+    [[ "$kind" == "Device" ]] || continue
+    # Unnamed devices found while scanning use their address as name
+    [[ -z "$name" || "$name" == "${mac//:/-}" ]] && continue
 
-  json_output="["
+    paired=false connected=false icon="bluetooth" battery=""
+    while IFS= read -r line; do
+      case "$line" in
+        *"Paired: yes") paired=true ;;
+        *"Connected: yes") connected=true ;;
+        *"Icon: "*) icon=${line##*Icon: } ;;
+        *"Battery Percentage:"*) battery=${line##*(}; battery=${battery%)} ;;
+      esac
+    done < <(bluetoothctl info "$mac")
 
-  while IFS= read -r line; do
-    device_id=$(echo "$line" | awk '{print $2}')
-    device_name=$(echo "$line" | cut -d ' ' -f 3-)
-    paired=$(bluetoothctl info "$device_id" | grep -q "Paired: yes" && echo "true" || echo "false")
-    connected=$(bluetoothctl info "$device_id" | grep -q "Connected: yes" && echo "true" || echo "false")
-    audio_profiles=$(get_audio_profiles $device_id)
+    battery_icon=""
+    [[ -n "$battery" ]] && battery_icon=${BATTERY_ICONS[$(( (battery + 5) / 10 ))]}
 
-
-    device="{\"id\":\"$device_id\",\"name\":\"$device_name\",\"paired\":$paired,\"connected\":$connected,\"card_id\":null}"
-    # device=$(jq --argjson device "$device" --argjson audio_profiles "$audio_profiles" '$device * $audio_profiles')
-
-    json_output+="$(echo "$device" "$audio_profiles" | jq -c -s 'add'),"
-  done <<< "$devices"
-
-  json_output="${json_output%,}]"
-
-  # Print the JSON output
-  echo "$json_output"
+    printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$mac" "$name" "$paired" "$connected" "$icon" "$battery" "$battery_icon"
+  done | jq -R -s -c '
+    split("\n")
+    | map(select(length > 0) | split("\t") | {
+      id: .[0],
+      name: .[1],
+      paired: (.[2] == "true"),
+      connected: (.[3] == "true"),
+      icon: .[4],
+      battery: .[5],
+      battery_icon: .[6]
+    })
+    | sort_by((.connected | not), (.paired | not), (.name | ascii_downcase))'
 }
 
 get_bluetooth_devices
 
-dbus-monitor --system "sender='org.bluez',member=PropertiesChanged" 2> /dev/null | 
+dbus-monitor --system "type='signal',sender='org.bluez'" 2> /dev/null |
 while read -r line; do
-  if echo $line | grep "signal" > /dev/null; then
-      get_bluetooth_devices
-  fi
+  [[ "$line" == signal* ]] || continue
+  # Coalesce bursts of signals (e.g. RSSI updates while scanning)
+  while read -r -t 0.5 _; do :; done
+  get_bluetooth_devices
 done

@@ -15,23 +15,10 @@
       :y "45"
       :x "-10"
       :width "400px"
-      :height "300px"
+      :height "350px"
       :anchor "top right")
   (systemwidget 
     :monitor monitor 
     :body body 
     :title title 
     :titlecontent titlecontent))
-
-(defwindow picker [items onchange ?selected x y]
-  :windowtype "dialog"
-  :geometry 
-    (geometry
-      :y y
-      :x x
-      :anchor "top right")
-  (picker 
-    :items items
-    :onchange onchange
-    :selected selected))
-  

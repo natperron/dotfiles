@@ -1,0 +1,315 @@
+; Profile list for a PipeWire card
+(defwidget audio-profiles [card_id profiles selected]
+  (box
+    :class "profiles"
+    :orientation "vertical"
+    :space-evenly false
+    :spacing 2
+    (for profile in profiles
+      (eventbox
+        :cursor {profile.id == selected ? "default" : "pointer"}
+        (button
+          :class "list-item ${profile.id == selected ? "selected" : ""}"
+          :active {profile.id != selected}
+          :onclick "wpctl set-profile ${card_id} ${profile.id}"
+          (label
+            :halign "start"
+            :truncate true
+            :text {profile.name}))))))
+
+(defwidget audio-titlecontent []
+  (box
+    :class "segmented"
+    :halign "end"
+    :valign "center"
+    :space-evenly false
+    (eventbox
+      :cursor {audioview == "devices" ? "default" : "pointer"}
+      (button
+        :class {audioview == "devices" ? "active" : ""}
+        :height 32
+        :onclick "eww update audioview=devices"
+        "Devices"))
+    (eventbox
+      :cursor {audioview == "apps" ? "default" : "pointer"}
+      (button
+        :class {audioview == "apps" ? "active" : ""}
+        :height 32
+        :onclick "eww update audioview=apps"
+        "Apps"))))
+
+(defwidget audio-content []
+  (scroll
+    :vscroll true
+    :vexpand true
+    (box
+      :class "audio"
+      :orientation "vertical"
+      :space-evenly false
+      (box
+        :visible {audioview == "devices"}
+        :orientation "vertical"
+        :space-evenly false
+        :spacing 12
+        (audio-section
+          :id "output"
+          :title "Output"
+          :nodes {audio.sinks}
+          :current {audio.sink}
+          :icon "󰕾"
+          :muted_icon "󰖁")
+        (audio-section
+          :id "input"
+          :title "Input"
+          :nodes {audio.sources}
+          :current {audio.source}
+          :icon "󰍬"
+          :muted_icon "󰍭")
+        (box
+          :orientation "vertical"
+          :space-evenly false
+          :spacing 5
+          (label
+            :class "section-title"
+            :halign "start"
+            :text "Devices")
+          (for card in {audio.cards}
+            (audio-card :card card))))
+      (box
+        :visible {audioview == "apps"}
+        :orientation "vertical"
+        :space-evenly false
+        :spacing 12
+        (audio-apps-section
+          :id "playback"
+          :title "Playback"
+          :apps {audio.playback}
+          :nodes {audio.sinks}
+          :icon "󰕾"
+          :muted_icon "󰖁")
+        (audio-apps-section
+          :id "recording"
+          :title "Recording"
+          :apps {audio.recording}
+          :nodes {audio.sources}
+          :icon "󰍬"
+          :muted_icon "󰍭")))))
+
+; Clickable section title, shows a summary (e.g. the default device) when collapsed
+(defwidget audio-section-header [title summary expanded onclick]
+  (eventbox
+    :cursor "pointer"
+    :onclick onclick
+    (box
+      :class "section-header"
+      :space-evenly false
+      :spacing 8
+      (label
+        :class "section-title"
+        :text title)
+      (label
+        :class "summary"
+        :halign "start"
+        :hexpand true
+        :truncate true
+        :visible {!expanded}
+        :text summary)
+      (label
+        :class "chevron"
+        :halign "end"
+        :hexpand expanded
+        :text {expanded ? "󰅃" : "󰅀"}))))
+
+; Mute button, slider and percentage for a node or app stream
+(defwidget audio-volume [id volume muted icon muted_icon]
+  (box
+    :space-evenly false
+    :spacing 8
+    (eventbox
+      :cursor "pointer"
+      (button
+        :class "button mute-button ${muted ? "muted" : ""}"
+        :width 32
+        :height 32
+        :tooltip {muted ? "Unmute" : "Mute"}
+        :onclick "wpctl set-mute ${id} toggle"
+        {muted ? muted_icon : icon}))
+    (scale
+      :class "custom-slider"
+      :hexpand true
+      :height 32
+      :min 0
+      :max 101
+      :value volume
+      :round-digits 0
+      :onchange "wpctl set-volume -l 1.0 ${id} {}%")
+    (label
+      :class "volume"
+      :width 36
+      :xalign 0
+      :text "${volume}%")))
+
+(defwidget audio-section [id title nodes current icon muted_icon]
+  (box
+    :orientation "vertical"
+    :space-evenly false
+    :spacing 5
+    (audio-section-header
+      :title title
+      :summary {arraylength(nodes) == 0 ? "No devices" : current.name}
+      :expanded {audioexpanded == id}
+      :onclick {audioexpanded == id
+        ? "eww update audioexpanded="
+        : "eww update audioexpanded=${id}"})
+    (box
+      :visible {current.id != ""}
+      (audio-volume
+        :id {current.id}
+        :volume {current.volume}
+        :muted {current.muted}
+        :icon icon
+        :muted_icon muted_icon))
+    (revealer
+      :transition "slidedown"
+      :reveal {audioexpanded == id}
+      (box
+        :orientation "vertical"
+        :space-evenly false
+        :spacing 2
+        (for node in nodes
+          (eventbox
+            :cursor {node.default ? "default" : "pointer"}
+            (button
+              :class "list-item ${node.default ? "selected" : ""}"
+              :active {!node.default}
+              :onclick "wpctl set-default ${node.id}"
+              (label
+                :halign "start"
+                :truncate true
+                :text {node.name}))))))))
+
+(defwidget audio-apps-section [id title apps nodes icon muted_icon]
+  (box
+    :orientation "vertical"
+    :space-evenly false
+    :spacing 5
+    (audio-section-header
+      :title title
+      :summary {arraylength(apps) == 0 ? "None"
+        : arraylength(apps) == 1 ? apps[0].name
+        : "${arraylength(apps)} apps"}
+      :expanded {audioappsexpanded == id}
+      :onclick {audioappsexpanded == id
+        ? "eww update audioappsexpanded="
+        : "eww update audioappsexpanded=${id}"})
+    (revealer
+      :transition "slidedown"
+      :reveal {audioappsexpanded == id}
+      (box
+        :orientation "vertical"
+        :space-evenly false
+        :spacing 5
+        (label
+          :class "message"
+          :halign "start"
+          :visible {arraylength(apps) == 0}
+          :text "No apps")
+        (for app in apps
+          (audio-app
+            :app app
+            :nodes nodes
+            :icon icon
+            :muted_icon muted_icon))))))
+
+; App stream card, expands to pick the device it plays to or records from
+(defwidget audio-app [app nodes icon muted_icon]
+  (box
+    :class "item-card ${audioappselected == app.id ? "expanded" : ""}"
+    :orientation "vertical"
+    :space-evenly false
+    :spacing 3
+    (eventbox
+      :cursor "pointer"
+      :tooltip {app.media}
+      :onclick {audioappselected == app.id
+        ? "eww update audioappselected="
+        : "eww update audioappselected=${app.id}"}
+      (box
+        :space-evenly false
+        :spacing 8
+        (image
+          :icon {app.icon}
+          :icon-size "menu")
+        (label
+          :halign "start"
+          :hexpand true
+          :truncate true
+          :text {app.name})
+        (label
+          :class "secondary"
+          :limit-width 22
+          :text {app.device_name})))
+    (audio-volume
+      :id {app.id}
+      :volume {app.volume}
+      :muted {app.muted}
+      :icon icon
+      :muted_icon muted_icon)
+    (revealer
+      :transition "slidedown"
+      :reveal {audioappselected == app.id}
+      (box
+        :orientation "vertical"
+        :space-evenly false
+        :spacing 2
+        (eventbox
+          :cursor {app.follow_default ? "default" : "pointer"}
+          (button
+            :class "list-item ${app.follow_default ? "selected" : ""}"
+            :active {!app.follow_default}
+            :onclick "pw-metadata -d ${app.id} target.object"
+            (label
+              :halign "start"
+              :text "Default")))
+        (for node in nodes
+          (eventbox
+            :cursor "pointer"
+            (button
+              :class "list-item ${!app.follow_default && node.id == app.device_id ? "selected" : ""}"
+              :onclick "pw-metadata ${app.id} target.object ${node.serial}"
+              (label
+                :halign "start"
+                :truncate true
+                :text {node.name}))))))))
+
+(defwidget audio-card [card]
+  (box
+    :class "item-card ${audioselected == card.id ? "expanded" : ""}"
+    :orientation "vertical"
+    :space-evenly false
+    (eventbox
+      :cursor "pointer"
+      :onclick {audioselected == card.id
+        ? "eww update audioselected="
+        : "eww update audioselected=${card.id}"}
+      (box
+        :orientation "vertical"
+        :space-evenly false
+        (label
+          :halign "start"
+          :truncate true
+          :text {card.name})
+        (label
+          :class "secondary"
+          :halign "start"
+          :truncate true
+          :text {card.selected_profile.name})))
+    (revealer
+      :transition "slidedown"
+      :reveal {audioselected == card.id}
+      (box
+        :class "item-details"
+        (audio-profiles
+          :card_id {card.id}
+          :profiles {card.profiles}
+          :selected {card.selected_profile.id})))))

@@ -1,135 +1,112 @@
-
 (defwidget bluetooth-titlecontent []
   (box
     :halign "end"
     :spacing 5
     :space-evenly false
     (eventbox
-      :cursor "pointer"
-      :active {bluetoothstatus.scanning ? false : true}
+      :cursor {bluetoothscanning || bluetoothstatus.scanning ? "default" : "pointer"}
+      :visible {bluetoothstatus.powered}
       (button
-        :class "button scan-button ${bluetoothstatus.scanning ? "disabled" : ""}"
-        :tooltip "Scan"
-        :active {bluetoothstatus.scanning ? false : true}
+        :class "button scan-button ${bluetoothscanning || bluetoothstatus.scanning ? "disabled" : ""}"
+        :tooltip {bluetoothscanning || bluetoothstatus.scanning ? "Scanning..." : "Scan"}
+        :active {!(bluetoothscanning || bluetoothstatus.scanning)}
         :width 32
         :height 32
-        :onclick "~/.config/eww/scripts/scan-bluetooth.sh"
-        ""))
-        (eventbox
-          :cursor "pointer"
-          (button
-            :class "button power-button ${bluetoothstatus.powered ? "on" : ""}"
-            :width 32
-            :height 32
-            :tooltip {bluetoothstatus.powered ? "Power Off" : "Power On"}
-            :onclick "bluetoothctl power ${bluetoothstatus.powered ? "off" : "on"}"
-            ""))))
+        :onclick "eww update bluetoothscanning=true; ~/.config/eww/scripts/scan-bluetooth.sh &"
+        (image
+          :class {bluetoothscanning || bluetoothstatus.scanning ? "spinner" : ""}
+          :icon "emblem-synchronizing-symbolic"
+          :icon-size "menu")))
+    (eventbox
+      :cursor "pointer"
+      (button
+        :class "button power-button ${bluetoothstatus.powered ? "on" : ""}"
+        :width 32
+        :height 32
+        :tooltip {bluetoothstatus.powered ? "Power Off" : "Power On"}
+        :onclick "bluetoothctl power ${bluetoothstatus.powered ? "off" : "on"}"
+        (image :icon "system-shutdown-symbolic" :icon-size "menu")))))
 
-(defwidget bluetooth-content [monitor]
+(defwidget bluetooth-content []
   (box
     :vexpand true
     :orientation "vertical"
     :space-evenly false
-    (bluetooth-message)
-    (bluetooth-devices :monitor monitor)))
-            
-(defwidget bluetooth-message []
-  (box
-    :valign "start"
-    :halign "center"
-    :visible {bluetoothstatus.powered ? false : true}
     (label
-      :text "Bluetooth is off"
-      :halign "center")))
-
-(defwidget bluetooth-devices [monitor]
-  (scroll
-    :vscroll true
-    :vexpand true
-    :visible {bluetoothstatus.powered ? true : false}
-    (box
-      :class "devices"
-      :orientation "vertical"
+      :class "message"
+      :visible {!bluetoothstatus.powered}
+      :text "Bluetooth is off")
+    (label
+      :class "message"
+      :visible {bluetoothstatus.powered && arraylength(bluetoothdevices) == 0}
+      :text "No devices, try scanning")
+    (scroll
+      :vscroll true
       :vexpand true
+      :visible {bluetoothstatus.powered}
+      (box
+        :class "devices"
+        :orientation "vertical"
+        :space-evenly false
+        :spacing 5
+        (for device in bluetoothdevices
+          (bluetooth-device :device device))))))
+
+(defwidget bluetooth-device [device]
+  (box
+    :class "item-card ${bluetoothselected == device.id ? "expanded" : ""}"
+    :orientation "vertical"
+    :space-evenly false
+    (box
+      :class "device"
       :space-evenly false
       :spacing 5
-      (for device in bluetoothdevices        
-        (bluetoothdevice :device device :monitor monitor)))))
-
-(defwidget bluetoothdevice [device monitor]
-  (eventbox
-    :class "device-eventbox"
-    :cursor "pointer"
-    :onclick {bluetoothcanexpand ?
-      "~/.config/eww/scripts/open-bluetooth-selected.sh ${device.id}" :
-      ""}
-    (box
-      :class "device-box"
-      :orientation "vertical"
-      :space-evenly false
-      (box
-        :class "device"
-        :orientation "horizontal"
-        :valign "start"
+      (eventbox
+        :cursor "pointer"
         :hexpand true
+        :onclick {bluetoothselected == device.id
+          ? "eww update bluetoothselected="
+          : "eww update bluetoothselected=${device.id}"}
+        (box
+          :space-evenly false
+          :spacing 8
+          (image :icon {device.icon})
+          (label
+            :halign "start"
+            :hexpand true
+            :truncate true
+            :text {device.name})
+          (label
+            :class "battery"
+            :visible {device.battery != ""}
+            :text "${device.battery_icon} ${device.battery}%")))
+      (eventbox
+        :cursor {bluetoothbusy == device.id ? "default" : "pointer"}
+        (button
+          :class "button text-button ${device.connected ? "disconnect-button" : ""} ${bluetoothbusy == device.id ? "disabled" : ""}"
+          :height 32
+          :active {bluetoothbusy != device.id}
+          :onclick "eww update bluetoothbusy=${device.id}; ~/.config/eww/scripts/toggle-bluetooth-device.sh ${device.id} &"
+          {bluetoothbusy == device.id
+            ? (device.connected ? "Disconnecting..." : "Connecting...")
+            : (device.connected ? "Disconnect" : device.paired ? "Connect" : "Pair")})))
+    (revealer
+      :transition "slidedown"
+      :reveal {bluetoothselected == device.id}
+      (box
+        :class "item-details"
+        :orientation "vertical"
         :spacing 5
         :space-evenly false
         (label
           :halign "start"
-          :hexpand true
-          :text "${device.name}")
+          :text "MAC Address: ${device.id}")
         (eventbox
           :cursor "pointer"
           :halign "end"
-          :onhover "eww update bluetoothcanexpand=false"
-          :onhoverlost "eww update bluetoothcanexpand=true"
+          :visible {device.paired}
           (button
-            :class "button ${device.connected ? "disconnect-button" : "connect-button"}"
-            :width 32
+            :class "button text-button forget-button"
             :height 32
-            :tooltip {device.connected ? "Disconnect" : "Connect"}
-            :onclick "bluetoothctl ${device.connected ? "disconnect" : device.paired ? "connect" : "pair"} ${device.id}"
-            {device.connected ? "󱘖" : ""})))
-      (revealer
-        :transition "slidedown"
-        :reveal {bluetoothselected == device.id ? true : false}
-          (box
-            :orientation "vertical"
-            :spacing 5
-            :hexpand true
-            :style "padding-top: 5px"
-            :space-evenly false
-            (label 
-              :halign "start"
-              :text "MAC Address: ${device.id}")
-            (box
-              :orientation "horizontal"
-              :spacing 5
-              :visible {device.card_id != "null" ? true : false}
-              :space-evenly false
-
-              (label 
-                :halign "start"
-                :text "Audio Profile:")
-              (eventbox
-                :cursor "pointer"
-                :hexpand true
-                :height 32
-                :tooltip "Audio profile"
-                :onhover "eww update bluetoothcanexpand=false"
-                :onhoverlost "eww update bluetoothcanexpand=true"
-                :class "button"
-                :onclick "~/.config/eww/scripts/open-bluetooth-picker.sh '${device.profiles}' ${device.card_id} ${device.selected_profile.id} ${monitor} 140"
-                (box
-                  :orientation "horizontal"
-                  :space-evenly false
-                  :spacing 5
-                  :style "padding-right: 8px; padding-left: 8px"
-                  (label
-                    :halign "start"
-                    :hexpand true
-                    :truncate true
-                    :text "${device.selected_profile.name}")
-                  (label
-                    :halign "end"
-                    :text "")))))))))
+            :onclick "bluetoothctl remove ${device.id}"
+            "Forget"))))))

@@ -1,0 +1,30 @@
+.mute-button {
+  font-family: $icon-font;
+  font-size: 16px;
+  &.muted {
+    color: $danger;
+  }
+}
+
+.section-header {
+  min-height: 24px;
+  .summary {
+    color: $secondary;
+  }
+  .chevron {
+    font-family: $icon-font;
+    color: $secondary;
+  }
+}
+
+.segmented {
+  background-color: $background-alt;
+  border-radius: $border-radius;
+  button {
+    padding: 0px 12px;
+    border-radius: $border-radius;
+    &.active {
+      background-color: $secondary;
+    }
+  }
+}

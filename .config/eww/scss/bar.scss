@@ -37,6 +37,12 @@ label {
 
 .mode {
   color: $secondary;
+  .separator {
+    margin: 0px 8px 0px 4px;
+  }
+  .mode-name {
+    margin-right: 4px;
+  }
 }
 
 .music {
@@ -69,13 +75,14 @@ label {
 
 .settings {
   padding: 0;
+  // Same padding on every icon keeps the gaps even, whichever are visible
   > * > * {
-    padding: 0px 8px 0px 8px;
+    padding: 0px 6px;
   }
   > *:first-child > * {
-    padding: 0px 4px 0px 8px;
+    padding: 0px 6px 0px 10px;
   }
   > *:last-child > * {
-    padding: 0px 8px 0px 4px;
+    padding: 0px 10px 0px 6px;
   }
 }

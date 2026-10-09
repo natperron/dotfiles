@@ -18,3 +18,28 @@
       :hexpand true
       :text title)
     (literal :content titlecontent)))
+
+; Clickable section title, shows a summary (e.g. the default device) when collapsed
+(defwidget section-header [title summary expanded onclick]
+  (eventbox
+    :cursor "pointer"
+    :onclick onclick
+    (box
+      :class "section-header"
+      :space-evenly false
+      :spacing 8
+      (label
+        :class "section-title"
+        :text title)
+      (label
+        :class "summary"
+        :halign "start"
+        :hexpand true
+        :truncate true
+        :visible {!expanded}
+        :text summary)
+      (label
+        :class "chevron"
+        :halign "end"
+        :hexpand expanded
+        :text {expanded ? "󰅃" : "󰅀"}))))

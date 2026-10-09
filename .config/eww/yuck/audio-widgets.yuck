@@ -95,31 +95,6 @@
           :icon "󰍬"
           :muted_icon "󰍭")))))
 
-; Clickable section title, shows a summary (e.g. the default device) when collapsed
-(defwidget audio-section-header [title summary expanded onclick]
-  (eventbox
-    :cursor "pointer"
-    :onclick onclick
-    (box
-      :class "section-header"
-      :space-evenly false
-      :spacing 8
-      (label
-        :class "section-title"
-        :text title)
-      (label
-        :class "summary"
-        :halign "start"
-        :hexpand true
-        :truncate true
-        :visible {!expanded}
-        :text summary)
-      (label
-        :class "chevron"
-        :halign "end"
-        :hexpand expanded
-        :text {expanded ? "󰅃" : "󰅀"}))))
-
 ; Mute button, slider and percentage for a node or app stream
 (defwidget audio-volume [id volume muted icon muted_icon]
   (box
@@ -154,7 +129,7 @@
     :orientation "vertical"
     :space-evenly false
     :spacing 5
-    (audio-section-header
+    (section-header
       :title title
       :summary {arraylength(nodes) == 0 ? "No devices" : current.name}
       :expanded {audioexpanded == id}
@@ -193,7 +168,7 @@
     :orientation "vertical"
     :space-evenly false
     :spacing 5
-    (audio-section-header
+    (section-header
       :title title
       :summary {arraylength(apps) == 0 ? "None"
         : arraylength(apps) == 1 ? apps[0].name

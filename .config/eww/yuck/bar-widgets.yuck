@@ -58,6 +58,7 @@
       :visible {mode == "default" ? false : true}
       :text "|")
     (label
+      :class "mode-name"
       :visible {mode == "default" ? false : true}
       :text "${mode}")))
 
@@ -119,11 +120,20 @@
   (box
     :class "block settings"
     :space-evenly false
+    (network-button :monitor monitor)
     (audio-button :monitor monitor)
     (bluetooth-button :monitor monitor)
     (brightness-button :monitor monitor)
     (battery :monitor monitor)
     (tray)))
+
+(defwidget network-button [monitor]
+  (eventbox
+    :cursor "pointer"
+    (button
+      :tooltip {network.tooltip}
+      :onclick "~/.config/eww/scripts/popup.sh network ${monitor} Network '(network-content)' '(network-titlecontent)' &"
+      (image :icon {network.icon}))))
 
 (defwidget audio-button [monitor]
   (eventbox

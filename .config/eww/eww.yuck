@@ -1,6 +1,7 @@
 (include './yuck/vars.yuck')
 (include './yuck/bar-widgets.yuck')
 (include './yuck/audio-widgets.yuck')
+(include './yuck/network-widgets.yuck')
 (include './yuck/bluetooth-widgets.yuck')
 (include './yuck/brightness-widgets.yuck')
 (include './yuck/window-widgets.yuck')

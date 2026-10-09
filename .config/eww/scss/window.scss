@@ -74,3 +74,28 @@ scale trough {
   min-height: 32px;
   min-width: 140px;
 }
+
+// Accordion header, see section-header in window-widgets.yuck
+.section-header {
+  min-height: 24px;
+  .summary {
+    color: $secondary;
+  }
+  .chevron {
+    font-family: $icon-font;
+    color: $secondary;
+  }
+}
+
+// Toggle buttons in popup headers (bluetooth power, Wi-Fi), red while on
+.power-button.on {
+  color: $danger;
+}
+
+@keyframes spin {
+  to { -gtk-icon-transform: rotate(1turn); }
+}
+
+.spinner {
+  animation: spin 2s linear infinite;
+}

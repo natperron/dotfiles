@@ -2,7 +2,8 @@
 pidof eww && eww kill;
 pidof eww && killall -9 eww;
 
-pidof stalonetray || (stalonetray &) && i3-msg [class="stalonetray"] move scratchpad;
+# i3 for_window rule moves new stalonetray windows to the scratchpad
+pidof stalonetray || (stalonetray &);
 count=0;
 eww daemon;
 for monitor in $(xrandr --listactivemonitors | awk '/^[[:space:]]*[0-9]:/ {print $NF}'); do

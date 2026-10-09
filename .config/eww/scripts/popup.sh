@@ -2,8 +2,9 @@
 # Toggle a systemwidget popup, closing any other popup, and close it again
 # once focus moves to a non-eww window.
 # Usage: popup.sh <id> <monitor> <title> <body> [titlecontent]
+#        popup.sh --close-all
 
-POPUPS=(bluetooth audio wifi brightness battery)
+POPUPS=(network audio bluetooth brightness battery)
 
 id=$1
 monitor=$2
@@ -16,18 +17,27 @@ is_open() {
     eww active-windows | grep -q "^$1:"
 }
 
+close_all() {
+    for popup in "${POPUPS[@]}"; do
+        is_open "$popup" && eww close "$popup"
+    done
+}
+
 # Only one focus watcher at a time, otherwise a stale one closes the new popup
 [[ -f "$pidfile" ]] && kill "$(cat "$pidfile")" 2> /dev/null
 rm -f "$pidfile"
+
+if [[ "$id" == "--close-all" ]]; then
+    close_all
+    exit 0
+fi
 
 if is_open "$id"; then
     eww close "$id"
     exit 0
 fi
 
-for popup in "${POPUPS[@]}"; do
-    is_open "$popup" && eww close "$popup"
-done
+close_all
 
 eww open systemwidget \
     --id "$id" \

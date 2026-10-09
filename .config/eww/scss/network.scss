@@ -1,0 +1,15 @@
+.network {
+  .error {
+    color: $danger;
+  }
+  .password-input {
+    background-color: $background-alt;
+    border-radius: $border-radius;
+    padding: 0px 8px;
+    min-height: 32px;
+  }
+  .lock {
+    font-family: $icon-font;
+    color: $secondary;
+  }
+}

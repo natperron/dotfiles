@@ -120,7 +120,7 @@ for_window [urgent="latest" class="firefox-esr"] focus
 focus_on_window_activation focus
 
 for_window [class="^.*"] border pixel 1
-for_window [class="stalonetray"] border pixel 0
+for_window [class="stalonetray"] border pixel 0, floating enable, move scratchpad
 for_window [class="Eww"] border pixel 0
 for_window [class="Florence"] floating enable
 for_window [class="(.*join\?action\=join.*|.*zoom.*)"] floating enable

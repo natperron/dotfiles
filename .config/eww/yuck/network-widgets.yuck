@@ -1,0 +1,392 @@
+; Network names and typed text never go into commands: networks are identified
+; by BSSID/UUID, and inputs reach network-action.sh through a quoted heredoc.
+
+(defwidget network-titlecontent []
+  (box
+    :halign "end"
+    :spacing 5
+    :space-evenly false
+    (eventbox
+      :cursor {networkscanning ? "default" : "pointer"}
+      :visible {network.wifi_device != "" && network.wifi_enabled}
+      (button
+        :class "button scan-button ${networkscanning ? "disabled" : ""}"
+        :tooltip {networkscanning ? "Scanning..." : "Scan"}
+        :active {!networkscanning}
+        :width 32
+        :height 32
+        :onclick "eww update networkscanning=true; ~/.config/eww/scripts/scan-network.sh &"
+        (image
+          :class {networkscanning ? "spinner" : ""}
+          :icon "emblem-synchronizing-symbolic"
+          :icon-size "menu")))
+    (eventbox
+      :cursor "pointer"
+      :visible {network.wifi_device != ""}
+      (button
+        :class "button power-button ${network.wifi_enabled ? "on" : ""}"
+        :width 32
+        :height 32
+        :tooltip {network.wifi_enabled ? "Turn Wi-Fi off" : "Turn Wi-Fi on"}
+        :onclick "nmcli radio wifi ${network.wifi_enabled ? "off" : "on"}"
+        (image :icon "system-shutdown-symbolic" :icon-size "menu")))))
+
+(defwidget network-content []
+  (scroll
+    :vscroll true
+    :vexpand true
+    (box
+      :class "network"
+      :orientation "vertical"
+      :space-evenly false
+      :spacing 12
+      (box
+        :visible {arraylength(network.active) > 0}
+        :orientation "vertical"
+        :space-evenly false
+        :spacing 5
+        (label
+          :class "section-title"
+          :halign "start"
+          :text "Connected")
+        (for conn in {network.active}
+          (network-active :conn conn)))
+      (box
+        :visible {arraylength(network.wired) > 0}
+        :orientation "vertical"
+        :space-evenly false
+        :spacing 5
+        (label
+          :class "section-title"
+          :halign "start"
+          :text "Wired")
+        (for dev in {network.wired}
+          (network-row
+            :icon "network-wired-symbolic"
+            :name {dev.name}
+            :key {dev.device}
+            :onclick "eww update networkbusy=${dev.device}; ~/.config/eww/scripts/network-action.sh device ${dev.device} &")))
+      (box
+        :visible {network.wifi_device != ""}
+        :orientation "vertical"
+        :space-evenly false
+        :spacing 5
+        (label
+          :class "section-title"
+          :halign "start"
+          :text "Wi-Fi")
+        (label
+          :class "message"
+          :halign "start"
+          :visible {!network.wifi_enabled}
+          :text "Wi-Fi is off")
+        (box
+          :visible {network.wifi_enabled}
+          :orientation "vertical"
+          :space-evenly false
+          :spacing 5
+          (label
+            :class "message"
+            :halign "start"
+            :visible {arraylength(network.networks) == 0}
+            :text "No other networks found")
+          (box
+            :orientation "vertical"
+            :space-evenly false
+            :spacing 5
+            (for net in {network.networks}
+              (network-wifi :net net)))
+          (network-hidden)))
+      (box
+        :visible {arraylength(network.vpns) > 0}
+        :orientation "vertical"
+        :space-evenly false
+        :spacing 5
+        (label
+          :class "section-title"
+          :halign "start"
+          :text "VPN")
+        (for vpn in {network.vpns}
+          (network-row
+            :icon "network-vpn-symbolic"
+            :name {vpn.name}
+            :key {vpn.uuid}
+            :onclick "eww update networkbusy=${vpn.uuid}; ~/.config/eww/scripts/network-action.sh up ${vpn.uuid} &")))
+      (box
+        :visible {arraylength(network.saved) > 0}
+        :orientation "vertical"
+        :space-evenly false
+        :spacing 5
+        (section-header
+          :title "Saved"
+          :summary "${arraylength(network.saved)} networks"
+          :expanded networksavedexpanded
+          :onclick "eww update networksavedexpanded=${!networksavedexpanded}")
+        (revealer
+          :transition "slidedown"
+          :reveal networksavedexpanded
+          (box
+            :orientation "vertical"
+            :space-evenly false
+            :spacing 5
+            (for conn in {network.saved}
+              (network-saved :conn conn))))))))
+
+; Text button that turns into a disabled busy label while its action runs
+(defwidget network-action-button [key label busy_label onclick ?class]
+  (eventbox
+    :cursor {networkbusy == key ? "default" : "pointer"}
+    (button
+      :class "button text-button ${class} ${networkbusy == key ? "disabled" : ""}"
+      :height 32
+      :active {networkbusy != key}
+      :onclick onclick
+      {networkbusy == key ? busy_label : label})))
+
+(defwidget network-error [key]
+  (label
+    :class "error"
+    :halign "start"
+    :xalign 0
+    :wrap true
+    :visible {networkerror == key}
+    :text networkerrormsg))
+
+; Simple card with a Connect button, for wired devices and VPNs
+(defwidget network-row [icon name key onclick]
+  (box
+    :class "item-card"
+    :orientation "vertical"
+    :space-evenly false
+    (box
+      :space-evenly false
+      :spacing 8
+      (image :icon icon :icon-size "menu")
+      (label
+        :halign "start"
+        :hexpand true
+        :truncate true
+        :text name)
+      (network-action-button
+        :key key
+        :label "Connect"
+        :busy_label "Connecting..."
+        :onclick onclick))
+    (network-error :key key)))
+
+(defwidget network-active [conn]
+  (box
+    :class "item-card ${networkselected == conn.uuid ? "expanded" : ""}"
+    :orientation "vertical"
+    :space-evenly false
+    (box
+      :space-evenly false
+      :spacing 5
+      (eventbox
+        :cursor "pointer"
+        :hexpand true
+        :onclick {networkselected == conn.uuid
+          ? "eww update networkselected="
+          : "eww update networkselected=${conn.uuid}"}
+        (box
+          :space-evenly false
+          :spacing 8
+          (image :icon {conn.icon} :icon-size "menu")
+          (label
+            :halign "start"
+            :hexpand true
+            :truncate true
+            :text {conn.name})
+          (label
+            :class "secondary"
+            :text {conn.detail})))
+      (network-action-button
+        :key {conn.uuid}
+        :label "Disconnect"
+        :busy_label "Disconnecting..."
+        :class "disconnect-button"
+        :onclick "eww update networkbusy=${conn.uuid}; ~/.config/eww/scripts/network-action.sh down ${conn.uuid} &"))
+    (network-error :key {conn.uuid})
+    (revealer
+      :transition "slidedown"
+      :reveal {networkselected == conn.uuid}
+      (box
+        :class "item-details"
+        :orientation "vertical"
+        :space-evenly false
+        :spacing 5
+        (label
+          :halign "start"
+          :visible {conn.ip != ""}
+          :text "IP: ${conn.ip}")
+        (label
+          :halign "start"
+          :visible {conn.gateway != ""}
+          :text "Gateway: ${conn.gateway}")
+        (label
+          :halign "start"
+          :visible {conn.dns != ""}
+          :wrap true
+          :xalign 0
+          :text "DNS: ${conn.dns}")
+        (label
+          :halign "start"
+          :text "Device: ${conn.device}")
+        (box
+          :halign "end"
+          :spacing 5
+          :space-evenly false
+          (eventbox
+            :cursor "pointer"
+            (button
+              :class "button text-button"
+              :height 32
+              :onclick "nmcli connection modify uuid ${conn.uuid} connection.autoconnect ${conn.autoconnect ? "no" : "yes"}"
+              {conn.autoconnect ? "Autoconnect: On" : "Autoconnect: Off"}))
+          (eventbox
+            :cursor "pointer"
+            :visible {conn.kind != "ethernet"}
+            (button
+              :class "button text-button forget-button"
+              :height 32
+              :onclick "nmcli connection delete uuid ${conn.uuid}"
+              "Forget")))))))
+
+; Network in range. Saved and open networks connect directly, secured ones
+; expand to ask for the password
+(defwidget network-wifi [net]
+  (box
+    :class "item-card ${networkselected == net.bssid ? "expanded" : ""}"
+    :orientation "vertical"
+    :space-evenly false
+    (box
+      :space-evenly false
+      :spacing 5
+      (eventbox
+        :cursor "pointer"
+        :hexpand true
+        :onclick {networkselected == net.bssid
+          ? "eww update networkselected="
+          : "eww update networkselected=${net.bssid}"}
+        (box
+          :space-evenly false
+          :spacing 8
+          (image :icon {net.icon} :icon-size "menu")
+          (label
+            :halign "start"
+            :hexpand true
+            :truncate true
+            :text {net.ssid})
+          (label
+            :class "lock"
+            :visible {net.secured}
+            :tooltip {net.security}
+            :text "󰌾")))
+      (network-action-button
+        :key {net.bssid}
+        :label "Connect"
+        :busy_label "Connecting..."
+        :onclick {net.saved_uuid != ""
+          ? "eww update networkbusy=${net.bssid}; ~/.config/eww/scripts/network-action.sh up ${net.saved_uuid} ${net.bssid} &"
+          : net.secured
+            ? "eww update networkselected=${net.bssid}"
+            : "eww update networkbusy=${net.bssid}; ~/.config/eww/scripts/network-action.sh wifi ${net.bssid} < /dev/null &"}))
+    (network-error :key {net.bssid})
+    (revealer
+      :transition "slidedown"
+      :reveal {networkselected == net.bssid}
+      (box
+        :class "item-details"
+        :orientation "vertical"
+        :space-evenly false
+        :spacing 5
+        (label
+          :class "secondary"
+          :halign "start"
+          :text "${net.bands}${net.security != "" ? " · ${net.security}" : ""}${net.saved_uuid != "" ? " · Saved" : ""}")
+        (label
+          :class "message"
+          :halign "start"
+          :visible {net.enterprise}
+          :wrap true
+          :text "Enterprise network, use nm-connection-editor to set it up")
+        (box
+          :visible {net.secured && net.saved_uuid == "" && !net.enterprise}
+          :space-evenly false
+          :spacing 8
+          (label :text "Password")
+          (input
+            :class "password-input"
+            :hexpand true
+            :password true
+            :onaccept "eww update networkbusy=${net.bssid}; ~/.config/eww/scripts/network-action.sh wifi ${net.bssid} <<'__EWW_INPUT__' &
+{}
+__EWW_INPUT__"))))))
+
+(defwidget network-hidden []
+  (box
+    :class "item-card ${networkselected == "hidden" ? "expanded" : ""}"
+    :orientation "vertical"
+    :space-evenly false
+    (eventbox
+      :cursor "pointer"
+      :onclick {networkselected == "hidden"
+        ? "eww update networkselected="
+        : "eww update networkselected=hidden"}
+      (box
+        :space-evenly false
+        :spacing 8
+        (image :icon "network-wireless-symbolic" :icon-size "menu")
+        (label
+          :halign "start"
+          :hexpand true
+          :text {networkbusy == "hidden" ? "Connecting..." : "Join hidden network"})))
+    (network-error :key "hidden")
+    (revealer
+      :transition "slidedown"
+      :reveal {networkselected == "hidden"}
+      (box
+        :class "item-details"
+        :orientation "vertical"
+        :space-evenly false
+        :spacing 5
+        (box
+          :space-evenly false
+          :spacing 8
+          (label :width 70 :xalign 0 :text "Name")
+          (input
+            :class "password-input"
+            :hexpand true
+            :onchange "eww update networkhiddenssid=\"$(cat <<'__EWW_INPUT__'
+{}
+__EWW_INPUT__
+)\""))
+        (box
+          :space-evenly false
+          :spacing 8
+          (label :width 70 :xalign 0 :text "Password")
+          (input
+            :class "password-input"
+            :hexpand true
+            :password true
+            :onaccept "eww update networkbusy=hidden; ~/.config/eww/scripts/network-action.sh hidden <<'__EWW_INPUT__' &
+{}
+__EWW_INPUT__"))))))
+
+(defwidget network-saved [conn]
+  (box
+    :class "item-card"
+    :space-evenly false
+    :spacing 8
+    (label
+      :halign "start"
+      :hexpand true
+      :truncate true
+      :text {conn.name})
+    (eventbox
+      :cursor "pointer"
+      (button
+        :class "button text-button forget-button"
+        :height 32
+        :onclick "nmcli connection delete uuid ${conn.uuid}"
+        "Forget"))))

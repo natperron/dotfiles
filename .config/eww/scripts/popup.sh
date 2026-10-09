@@ -54,7 +54,8 @@ while i3-msg -t subscribe '["window"]' > /dev/null; do
     [[ "$xpropid" == "0x0" || "$xpropid" == "" ]] && break
     wm_class=$(xprop -id "$xpropid" WM_CLASS | awk '{print $NF}' | tr -d '"')
     wm_name=$(xprop -id "$xpropid" WM_NAME | awk '{print $NF}' | tr -d '"')
-    [[ "${wm_class,,}" != "eww" && "$wm_name" != "systemwidget" ]] && break
+    # zenity is the network popup's file picker for VPN imports
+    [[ "${wm_class,,}" != "eww" && "${wm_class,,}" != "zenity" && "$wm_name" != "systemwidget" ]] && break
 done
 eww close "$id"
 rm -f "$pidfile"

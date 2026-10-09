@@ -3,7 +3,7 @@
 # devices, Wi-Fi networks in range, VPNs and saved Wi-Fi profiles
 
 get_network() {
-  local devices connections networks details profiles
+  local devices connections networks details profiles vpninfo
 
   devices=$(nmcli -t -f DEVICE,TYPE,STATE device)
   connections=$(nmcli -t -f NAME,UUID,TYPE,DEVICE,AUTOCONNECT,ACTIVE connection show)
@@ -22,12 +22,29 @@ get_network() {
     printf '%s\t%s\n' "$uuid" "$(nmcli -g 802-11-wireless.ssid connection show uuid "$uuid")"
   done)
 
+  # Saved VPN settings: uuid, type, server, address, dns, last used
+  vpninfo=$(nmcli -t -f UUID,TYPE connection show | while IFS=: read -r uuid type; do
+    [[ "$type" == "vpn" || "$type" == "wireguard" ]] || continue
+    mapfile -t info < <(nmcli -g connection.timestamp,ipv4.addresses,ipv4.dns,vpn.service-type,vpn.data connection show uuid "$uuid")
+    case "$type:${info[3]}" in
+      wireguard:*) kind="WireGuard" ;;
+      *openvpn) kind="OpenVPN" ;;
+      *) kind="VPN" ;;
+    esac
+    # WireGuard endpoints are only readable by root, OpenVPN keeps it in vpn.data
+    server=$(grep -oP '(^|, )remote = \K[^,]*' <<< "${info[4]}")
+    used="Never"
+    (( ${info[0]:-0} > 0 )) && used=$(date -d "@${info[0]}" '+%b %-d, %Y')
+    printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$uuid" "$kind" "$server" "${info[1]//,/, }" "${info[2]//,/, }" "$used"
+  done)
+
   jq -n -c \
     --arg devices "$devices" \
     --arg connections "$connections" \
     --arg networks "$networks" \
     --arg details "$details" \
     --arg profiles "$profiles" \
+    --arg vpninfo "$vpninfo" \
     --arg radio "$(nmcli radio wifi)" '
     def lines: split("\n") | map(select(length > 0));
     def unescape: gsub("\\\\(?<c>.)"; .c);
@@ -64,6 +81,10 @@ get_network() {
       }
     }) | from_entries) as $details
     | ($profiles | lines | map(split("\t") | {uuid: .[0], ssid: (.[1] | unescape)})) as $profiles
+    | ($vpninfo | lines | map(split("\t") | {
+      key: .[0],
+      value: {type: .[1], server: .[2], address: .[3], vpn_dns: .[4], last_used: .[5]}
+    }) | from_entries) as $vpninfo
 
     # Access points grouped by SSID, keeping the strongest one
     | ($networks | lines | map(terse | {
@@ -90,11 +111,11 @@ get_network() {
       | map(
         (.type | if . == "802-11-wireless" then "wifi" elif . == "802-3-ethernet" then "ethernet" else "vpn" end) as $kind
         | ($aps | map(select(.active)) | first) as $ap
-        | {uuid, name, device, autoconnect, kind: $kind}
+        | {uuid, name, device, autoconnect, kind: $kind, server: ""}
         + ($details[.uuid] // {ip: "", gateway: "", dns: "", speed: ""})
         + if $kind == "wifi" then {icon: (($ap.signal // 0) | signal_icon), detail: (if $ap then $ap | band else "" end)}
           elif $kind == "ethernet" then {icon: "network-wired-symbolic", detail: .speed}
-          else {icon: "network-vpn-symbolic", detail: "VPN"} end)
+          else {icon: "network-vpn-symbolic", detail: ($vpninfo[.uuid].type // "VPN"), server: ($vpninfo[.uuid].server // "")} end)
       | sort_by(.kind | {ethernet: 0, wifi: 1, vpn: 2}[.])) as $active
 
     | ($wifi | map(select(.active | not)) | sort_by(-.signal)) as $available
@@ -110,14 +131,17 @@ get_network() {
         elif $wifi_device != "" and $radio != "enabled" then "network-wireless-disabled-symbolic"
         else "network-offline-symbolic" end),
       tooltip: (if $active == [] then "Disconnected" else $active | map(.name) | join(", ") end),
-      active: $active,
+      # Active connections are listed at the top of their own section
+      wired_active: ($active | map(select(.kind == "ethernet"))),
+      wifi_active: ($active | map(select(.kind == "wifi"))),
+      vpn_active: ($active | map(select(.kind == "vpn"))),
       wired: ($devices
         | map(select(.type == "ethernet" and .state == "disconnected"))
         | map({device, name: "Wired (\(.device))"})),
       networks: $available,
       vpns: ($connections
         | map(select((.type == "vpn" or .type == "wireguard") and (.active | not)))
-        | map({uuid, name})),
+        | map({uuid, name, autoconnect} + ($vpninfo[.uuid] // {}))),
       saved: ($connections
         | map(select(.type == "802-11-wireless" and (.active | not)))
         | map(. as $c | select(($profiles | map(select(.uuid == $c.uuid)) | first.ssid // $c.name) as $ssid

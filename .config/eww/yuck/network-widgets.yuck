@@ -1,5 +1,8 @@
 ; Network names and typed text never go into commands: networks are identified
 ; by BSSID/UUID, and inputs reach network-action.sh through a quoted heredoc.
+;
+; Every `for` gets its own box: eww rebuilds a loop on any change and appends
+; the new children at the end of its parent, after any sibling widgets.
 
 (defwidget network-titlecontent []
   (box
@@ -41,18 +44,7 @@
       :space-evenly false
       :spacing 12
       (box
-        :visible {arraylength(network.active) > 0}
-        :orientation "vertical"
-        :space-evenly false
-        :spacing 5
-        (label
-          :class "section-title"
-          :halign "start"
-          :text "Connected")
-        (for conn in {network.active}
-          (network-active :conn conn)))
-      (box
-        :visible {arraylength(network.wired) > 0}
+        :visible {arraylength(network.wired) > 0 || arraylength(network.wired_active) > 0}
         :orientation "vertical"
         :space-evenly false
         :spacing 5
@@ -60,12 +52,24 @@
           :class "section-title"
           :halign "start"
           :text "Wired")
-        (for dev in {network.wired}
-          (network-row
-            :icon "network-wired-symbolic"
-            :name {dev.name}
-            :key {dev.device}
-            :onclick "eww update networkbusy=${dev.device}; ~/.config/eww/scripts/network-action.sh device ${dev.device} &")))
+        (box
+          :visible {arraylength(network.wired_active) > 0}
+          :orientation "vertical"
+          :space-evenly false
+          :spacing 5
+          (for conn in {network.wired_active}
+            (network-active :conn conn)))
+        (box
+          :visible {arraylength(network.wired) > 0}
+          :orientation "vertical"
+          :space-evenly false
+          :spacing 5
+          (for dev in {network.wired}
+            (network-row
+              :icon "network-wired-symbolic"
+              :name {dev.name}
+              :key {dev.device}
+              :onclick "eww update networkbusy=${dev.device}; ~/.config/eww/scripts/network-action.sh device ${dev.device} &"))))
       (box
         :visible {network.wifi_device != ""}
         :orientation "vertical"
@@ -85,11 +89,13 @@
           :orientation "vertical"
           :space-evenly false
           :spacing 5
-          (label
-            :class "message"
-            :halign "start"
-            :visible {arraylength(network.networks) == 0}
-            :text "No other networks found")
+          (box
+            :visible {arraylength(network.wifi_active) > 0}
+            :orientation "vertical"
+            :space-evenly false
+            :spacing 5
+            (for conn in {network.wifi_active}
+              (network-active :conn conn)))
           (box
             :orientation "vertical"
             :space-evenly false
@@ -98,7 +104,6 @@
               (network-wifi :net net)))
           (network-hidden)))
       (box
-        :visible {arraylength(network.vpns) > 0}
         :orientation "vertical"
         :space-evenly false
         :spacing 5
@@ -106,12 +111,28 @@
           :class "section-title"
           :halign "start"
           :text "VPN")
-        (for vpn in {network.vpns}
-          (network-row
-            :icon "network-vpn-symbolic"
-            :name {vpn.name}
-            :key {vpn.uuid}
-            :onclick "eww update networkbusy=${vpn.uuid}; ~/.config/eww/scripts/network-action.sh up ${vpn.uuid} &")))
+        (box
+          :visible {arraylength(network.vpn_active) > 0}
+          :orientation "vertical"
+          :space-evenly false
+          :spacing 5
+          (for conn in {network.vpn_active}
+            (network-active :conn conn)))
+        (box
+          :visible {arraylength(network.vpns) > 0}
+          :orientation "vertical"
+          :space-evenly false
+          :spacing 5
+          (for vpn in {network.vpns}
+            (network-vpn :vpn vpn)))
+        ; Imports a WireGuard (.conf) or OpenVPN (.ovpn) file picked with zenity
+        (network-row
+          :icon "list-add-symbolic"
+          :name "Import VPN"
+          :key "import"
+          :label "Import"
+          :busy_label "Importing..."
+          :onclick "eww update networkbusy=import; ~/.config/eww/scripts/network-action.sh import &"))
       (box
         :visible {arraylength(network.saved) > 0}
         :orientation "vertical"
@@ -152,8 +173,8 @@
     :visible {networkerror == key}
     :text networkerrormsg))
 
-; Simple card with a Connect button, for wired devices and VPNs
-(defwidget network-row [icon name key onclick]
+; Simple card with a button (Connect by default), for wired devices and VPN import
+(defwidget network-row [icon name key onclick ?label ?busy_label]
   (box
     :class "item-card"
     :orientation "vertical"
@@ -169,10 +190,89 @@
         :text name)
       (network-action-button
         :key key
-        :label "Connect"
-        :busy_label "Connecting..."
+        :label {label ?: "Connect"}
+        :busy_label {busy_label ?: "Connecting..."}
         :onclick onclick))
     (network-error :key key)))
+
+; Disconnected VPN, expands to show its saved settings
+(defwidget network-vpn [vpn]
+  (box
+    :class "item-card ${networkselected == vpn.uuid ? "expanded" : ""}"
+    :orientation "vertical"
+    :space-evenly false
+    (box
+      :space-evenly false
+      :spacing 5
+      (eventbox
+        :cursor "pointer"
+        :hexpand true
+        :onclick {networkselected == vpn.uuid
+          ? "eww update networkselected="
+          : "eww update networkselected=${vpn.uuid}"}
+        (box
+          :space-evenly false
+          :spacing 8
+          (image :icon "network-vpn-symbolic" :icon-size "menu")
+          (label
+            :halign "start"
+            :hexpand true
+            :truncate true
+            :text {vpn.name})
+          (label
+            :class "secondary"
+            :text {vpn.type})))
+      (network-action-button
+        :key {vpn.uuid}
+        :label "Connect"
+        :busy_label "Connecting..."
+        :onclick "eww update networkbusy=${vpn.uuid}; ~/.config/eww/scripts/network-action.sh up ${vpn.uuid} &"))
+    (network-error :key {vpn.uuid})
+    (revealer
+      :transition "slidedown"
+      :reveal {networkselected == vpn.uuid}
+      (box
+        :class "item-details"
+        :orientation "vertical"
+        :space-evenly false
+        :spacing 5
+        (label
+          :halign "start"
+          :visible {vpn.server != ""}
+          :text "Server: ${vpn.server}")
+        (label
+          :halign "start"
+          :visible {vpn.address != ""}
+          :wrap true
+          :xalign 0
+          :text "Address: ${vpn.address}")
+        (label
+          :halign "start"
+          :visible {vpn.vpn_dns != ""}
+          :wrap true
+          :xalign 0
+          :text "DNS: ${vpn.vpn_dns}")
+        (label
+          :halign "start"
+          :text "Last used: ${vpn.last_used}")
+        (box
+          :halign "end"
+          :spacing 5
+          :space-evenly false
+          (eventbox
+            :cursor "pointer"
+            (button
+              :class "button text-button"
+              :height 32
+              :onclick "nmcli connection modify uuid ${vpn.uuid} connection.autoconnect ${vpn.autoconnect ? "no" : "yes"}"
+              {vpn.autoconnect ? "Autoconnect: On" : "Autoconnect: Off"}))
+          (eventbox
+            :cursor "pointer"
+            (button
+              :class "button text-button forget-button"
+              :height 32
+              :onclick "nmcli connection delete uuid ${vpn.uuid}"
+              "Forget")))))))
 
 (defwidget network-active [conn]
   (box
@@ -231,6 +331,11 @@
           :text "DNS: ${conn.dns}")
         (label
           :halign "start"
+          :visible {conn.server != ""}
+          :text "Server: ${conn.server}")
+        (label
+          :halign "start"
+          :visible {conn.kind != "vpn"}
           :text "Device: ${conn.device}")
         (box
           :halign "end"
@@ -333,7 +438,9 @@ __EWW_INPUT__"))))))
       :onclick {networkselected == "hidden"
         ? "eww update networkselected="
         : "eww update networkselected=hidden"}
+      ; Same height as rows with a button, so the card lines up with the others
       (box
+        :height 32
         :space-evenly false
         :spacing 8
         (image :icon "network-wireless-symbolic" :icon-size "menu")

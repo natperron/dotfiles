@@ -6,7 +6,7 @@
 (deflisten bluetoothstatus :initial '{"icon":"bluetooth-offline","powered":false,"scanning":false}' `~/.config/eww/scripts/listen-bluetooth-status.sh`)
 (deflisten bluetoothdevices :initial '[]' `~/.config/eww/scripts/listen-bluetooth-devices.sh`)
 (deflisten audio :initial '{"sink":{"id":"","volume":0,"muted":true,"icon":"audio-volume-muted"},"source":{"id":"","volume":0,"muted":true},"sinks":[],"sources":[],"playback":[],"recording":[],"cards":[]}' `~/.config/eww/scripts/listen-audio.sh`)
-(deflisten network :initial '{"wifi_device":"","wifi_enabled":false,"icon":"network-offline-symbolic","tooltip":"","active":[],"wired":[],"networks":[],"vpns":[],"saved":[]}' `~/.config/eww/scripts/listen-network.sh`)
+(deflisten network :initial '{"wifi_device":"","wifi_enabled":false,"icon":"network-offline-symbolic","tooltip":"","wired_active":[],"wifi_active":[],"vpn_active":[],"wired":[],"networks":[],"vpns":[],"saved":[]}' `~/.config/eww/scripts/listen-network.sh`)
 (deflisten brightness `~/.config/eww/scripts/listen-brightness-status.sh`)
 (defpoll datetime :interval "1s" "date +'%b %d, %H:%M'")
 (defvar batterypercent false)
